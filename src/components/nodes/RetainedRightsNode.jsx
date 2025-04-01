@@ -47,6 +47,13 @@ const RetainedRightsNode = ({ data, isConnectable, selected, style }) => {
         position={Position.Top}
         isConnectable={isConnectable}
       />
+
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        isConnectable={isConnectable}
+      />
+
       <div className="node-content">
         <div 
           className="node-label editable-content"
@@ -71,7 +78,7 @@ const RetainedRightsNode = ({ data, isConnectable, selected, style }) => {
             ))}
           </div>
         )}
-        <div 
+        {/* <div 
           className="node-note editable-content"
           contentEditable
           suppressContentEditableWarning
@@ -79,7 +86,7 @@ const RetainedRightsNode = ({ data, isConnectable, selected, style }) => {
           placeholder="Add notes..."
         >
           {note}
-        </div>
+        </div> */}
       </div>
     </div>
   );

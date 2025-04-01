@@ -7,6 +7,7 @@ import { useReactFlow } from '@xyflow/react';
 import useStore from '../store/flowStore';
 import DraggableNode from './DraggableNode';
 import '../styles/ControlPanel.css';
+import Chart from '../pages/Chart';
 
 const ControlPanel = ({ reactFlowWrapper, selectedNode, selectedEdge }) => {
   const { getNodes, getEdges, setViewport } = useReactFlow();
@@ -52,7 +53,8 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode, selectedEdge }) => {
 
   // Reset the flow
   const onReset = useCallback(() => {
-    resetFlow();
+    //resetFlow();
+    createInitialNodes();
     setViewport({ x: 0, y: 0, zoom: 1 });
   }, [resetFlow, setViewport]);
 
@@ -129,14 +131,13 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode, selectedEdge }) => {
             data={{ 
               label: 'Grantee (Also Grantor)',
               details: [
-                '(Grantor with Retained Rights use dotted line.',
-                'This depicts ongoing ownership interest after assignment)'
+                '( Grantor with Retained Rights use dotted line. This depicts ongoing ownership interest after assignment )'
               ]
             }}
             label="Retained Rights"
             className="node-retained-rights"
           />
-          <DraggableNode 
+          {/* <DraggableNode 
             type="bubbleNode" 
             onDragStart={onDragStart} 
             data={{ 
@@ -179,7 +180,7 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode, selectedEdge }) => {
             }}
             label="Adoption"
             className="node-bubble"
-          />
+          /> */}
         </div>
       </div>
 
@@ -262,7 +263,7 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode, selectedEdge }) => {
         </div>
       )}
 
-      <div className="panel-section">
+      {/* <div className="panel-section">
         <h3>Edge Colors</h3>
         <div className="edge-color-guide">
           <div className="edge-color-item">
@@ -282,7 +283,7 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode, selectedEdge }) => {
             <span>Adoption/Divorce</span>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

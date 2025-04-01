@@ -36,11 +36,11 @@ const GranteeNode = ({ data, isConnectable, selected, style }) => {
         position={Position.Top}
         isConnectable={isConnectable}
       />
-      <Handle
+      {/* <Handle
         type="source"
         position={Position.Bottom}
         isConnectable={isConnectable}
-      />
+      /> */}
       <div 
         className="node-label editable-content"
         contentEditable
@@ -49,7 +49,7 @@ const GranteeNode = ({ data, isConnectable, selected, style }) => {
       >
         {label}
       </div>
-      <div 
+      {/* <div 
         className="node-note editable-content"
         contentEditable
         suppressContentEditableWarning
@@ -57,7 +57,7 @@ const GranteeNode = ({ data, isConnectable, selected, style }) => {
         placeholder="Add notes..."
       >
         {note}
-      </div>
+      </div> */}
     </div>
   );
 };

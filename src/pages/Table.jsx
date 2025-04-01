@@ -69,7 +69,7 @@ const Table = () => {
                     className="generate-chart-btn" 
                     onClick={() => handleGenerateChart(file.id)}
                   >
-                    Generate Chart
+                    Add TO Chart
                   </button>
                 </td>
               </tr>

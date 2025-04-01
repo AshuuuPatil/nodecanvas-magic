@@ -44,7 +44,7 @@ const GrantorNode = ({ data, isConnectable, selected, style }) => {
       >
         {label}
       </div>
-      <div 
+      {/* <div 
         className="node-note editable-content"
         contentEditable
         suppressContentEditableWarning
@@ -52,7 +52,7 @@ const GrantorNode = ({ data, isConnectable, selected, style }) => {
         placeholder="Add notes..."
       >
         {note}
-      </div>
+      </div> */}
     </div>
   );
 };
