@@ -1,0 +1,36 @@
+
+.draggable-node {
+  padding: 10px;
+  border: 1px solid #ddd;
+  background-color: white;
+  border-radius: 3px;
+  text-align: center;
+  cursor: grab;
+  margin-bottom: 5px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.draggable-node:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.node-grantor, .node-grantee, .node-retained-rights {
+  background-color: #4a90e2;
+  color: white;
+}
+
+.node-instrument {
+  background-color: #f5f5f5;
+}
+
+.node-bubble {
+  background-color: white;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}

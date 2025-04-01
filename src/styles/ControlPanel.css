@@ -1,0 +1,69 @@
+
+.control-panel {
+  width: 250px;
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-right: 1px solid #ddd;
+  overflow-y: auto;
+}
+
+.panel-section {
+  margin-bottom: 20px;
+}
+
+.panel-section h3 {
+  font-size: 14px;
+  margin-bottom: 10px;
+  color: #333;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+}
+
+.draggable-nodes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.action-buttons, .node-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-action {
+  padding: 8px;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+  font-size: 12px;
+  transition: background-color 0.3s;
+}
+
+.btn-action:hover {
+  background-color: #3a80d2;
+}
+
+.color-picker-container {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.btn-apply-color {
+  margin-top: 10px;
+  padding: 5px 10px;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-apply-color:hover {
+  background-color: #3a80d2;
+}

@@ -1,0 +1,77 @@
+
+.react-flow__node {
+  border-radius: 3px;
+  font-size: 12px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.react-flow__node.selected {
+  box-shadow: 0 0 0 2px #1a192b;
+}
+
+.node-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 8px;
+}
+
+.node-label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.node-details {
+  font-size: 10px;
+  text-align: left;
+}
+
+.detail-item {
+  margin-bottom: 3px;
+}
+
+.small-text {
+  font-size: 8px;
+}
+
+/* Node styles */
+.grantor-node, .grantee-node, .retained-rights-node {
+  color: white;
+  padding: 10px;
+  border-radius: 3px;
+}
+
+.instrument-node {
+  padding: 10px;
+}
+
+.bubble-node {
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  text-align: center;
+}
+
+.bubble-node .node-content {
+  padding: 0;
+}
+
+.note-bubble {
+  border-radius: 5px;
+}
+
+/* Handle positioning and styles */
+.react-flow__handle {
+  width: 8px;
+  height: 8px;
+  background-color: #555;
+}
+
+.react-flow__handle:hover {
+  background-color: #999;
+}
