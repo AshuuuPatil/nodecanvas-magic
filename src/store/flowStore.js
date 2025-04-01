@@ -13,8 +13,11 @@ const initialNodes = [
     id: '1',
     type: 'grantorNode',
     position: { x: 350, y: 50 },
-    data: { label: 'Grantor' },
-    style: { backgroundColor: '#4a90e2', width: 180, height: 60 }
+    data: { 
+      label: 'Grantor',
+      note: 'Click to edit notes'
+    },
+    style: { backgroundColor: '#9b87f5', width: 180, height: 60 }
   },
   {
     id: '2',
@@ -28,7 +31,8 @@ const initialNodes = [
         'Filed Date',
         '-User Notes-',
         'Transfered Rights'
-      ]
+      ],
+      note: 'Additional notes can be added here'
     },
     style: { backgroundColor: '#f5f5f5', border: '1px solid #ccc', width: 220, height: 130 }
   },
@@ -38,7 +42,8 @@ const initialNodes = [
     position: { x: 600, y: 110 },
     data: { 
       label: 'Death Certificate',
-      details: '• Details'
+      details: '• Details',
+      type: 'death'
     },
     style: { width: 120, height: 80 }
   },
@@ -48,7 +53,8 @@ const initialNodes = [
     position: { x: 600, y: 160 },
     data: { 
       label: 'Affidavit of Heirship',
-      details: '• Details'
+      details: '• Details',
+      type: 'affidavit'
     },
     style: { width: 120, height: 80 }
   },
@@ -58,7 +64,8 @@ const initialNodes = [
     position: { x: 600, y: 210 },
     data: { 
       label: 'Obituary',
-      details: '• Details'
+      details: '• Details',
+      type: 'obituary'
     },
     style: { width: 120, height: 70 }
   },
@@ -68,7 +75,8 @@ const initialNodes = [
     position: { x: 600, y: 270 },
     data: { 
       label: 'Adoption / Divorce',
-      details: '• Details'
+      details: '• Details',
+      type: 'adoption'
     },
     style: { width: 120, height: 80 }
   },
@@ -76,22 +84,34 @@ const initialNodes = [
     id: '7',
     type: 'granteeNode',
     position: { x: 150, y: 400 },
-    data: { label: 'Grantee' },
-    style: { backgroundColor: '#4a90e2', width: 180, height: 60 }
+    data: { 
+      label: 'Grantee (Extendable)',
+      note: 'Click to edit notes',
+      isFinal: false
+    },
+    style: { backgroundColor: '#7E69AB', width: 180, height: 60 }
   },
   {
     id: '8',
     type: 'granteeNode',
     position: { x: 350, y: 400 },
-    data: { label: 'Grantee' },
-    style: { backgroundColor: '#4a90e2', width: 180, height: 60 }
+    data: { 
+      label: 'Grantee (Extendable)',
+      note: 'Click to edit notes',
+      isFinal: false
+    },
+    style: { backgroundColor: '#7E69AB', width: 180, height: 60 }
   },
   {
     id: '9',
     type: 'granteeNode',
     position: { x: 550, y: 400 },
-    data: { label: 'Grantee' },
-    style: { backgroundColor: '#4a90e2', width: 180, height: 60 }
+    data: { 
+      label: 'Grantee (Final)',
+      note: 'Final grantee - cannot extend',
+      isFinal: true
+    },
+    style: { backgroundColor: '#6E59A5', width: 180, height: 60 }
   },
   {
     id: '10',
@@ -103,9 +123,10 @@ const initialNodes = [
         '(Grantor with Retained Rights use dotted line.',
         'This depicts ongoing ownership interest after',
         'assignment)'
-      ]
+      ],
+      note: 'Click to edit notes'
     },
-    style: { backgroundColor: '#4a90e2', width: 180, height: 90 }
+    style: { backgroundColor: '#7E69AB', width: 180, height: 90 }
   },
   {
     id: '11',
@@ -133,7 +154,8 @@ const initialEdges = [
     target: '2', 
     type: 'custom',
     animated: false,
-    style: { stroke: '#000' }
+    style: { stroke: '#000' },
+    data: { type: 'default' }
   },
   { 
     id: 'e2-3', 
@@ -142,7 +164,8 @@ const initialEdges = [
     type: 'custom',
     animated: false,
     sourceHandle: 'right',
-    style: { stroke: '#000' }
+    style: { stroke: '#ea384c' },
+    data: { type: 'death' }
   },
   { 
     id: 'e2-4', 
@@ -151,7 +174,8 @@ const initialEdges = [
     type: 'custom',
     animated: false,
     sourceHandle: 'right',
-    style: { stroke: '#000' }
+    style: { stroke: '#FFD700' },
+    data: { type: 'affidavit' }
   },
   { 
     id: 'e2-5', 
@@ -160,7 +184,8 @@ const initialEdges = [
     type: 'custom',
     animated: false,
     sourceHandle: 'right',
-    style: { stroke: '#000' }
+    style: { stroke: '#1EAEDB' },
+    data: { type: 'obituary' }
   },
   { 
     id: 'e2-6', 
@@ -169,7 +194,8 @@ const initialEdges = [
     type: 'custom',
     animated: false,
     sourceHandle: 'right',
-    style: { stroke: '#000' }
+    style: { stroke: '#4CAF50' },
+    data: { type: 'adoption' }
   },
   { 
     id: 'e2-7', 
@@ -178,7 +204,8 @@ const initialEdges = [
     type: 'custom',
     animated: false,
     sourceHandle: 'bottom',
-    style: { stroke: '#000' }
+    style: { stroke: '#000' },
+    data: { type: 'default' }
   },
   { 
     id: 'e2-8', 
@@ -187,7 +214,8 @@ const initialEdges = [
     type: 'custom',
     animated: false,
     sourceHandle: 'bottom',
-    style: { stroke: '#000' }
+    style: { stroke: '#000' },
+    data: { type: 'default' }
   },
   { 
     id: 'e2-9', 
@@ -196,7 +224,8 @@ const initialEdges = [
     type: 'custom',
     animated: false,
     sourceHandle: 'bottom',
-    style: { stroke: '#000' }
+    style: { stroke: '#000' },
+    data: { type: 'default' }
   },
   { 
     id: 'e2-10', 
@@ -205,7 +234,8 @@ const initialEdges = [
     type: 'dashed',
     animated: false,
     sourceHandle: 'bottom',
-    style: { stroke: '#000' }
+    style: { stroke: '#000' },
+    data: { type: 'default' }
   },
 ];
 
@@ -230,11 +260,22 @@ const useStore = create((set, get) => ({
   
   // Connect nodes with edges
   onConnect: (connection) => {
+    // Get target node to determine edge color based on node type
+    const targetNode = get().nodes.find(node => node.id === connection.target);
+    let edgeData = { type: 'default' };
+    
+    if (targetNode) {
+      if (targetNode.type === 'bubbleNode' && targetNode.data.type) {
+        edgeData.type = targetNode.data.type;
+      }
+    }
+    
     set({
       edges: addEdge({
         ...connection,
         type: 'custom',
         animated: false,
+        data: edgeData,
         style: { stroke: '#000' }
       }, get().edges),
     });
@@ -253,9 +294,15 @@ const useStore = create((set, get) => ({
     // Apply default styling based on node type
     switch (type) {
       case 'grantorNode':
+        newNode.style = { 
+          backgroundColor: '#9b87f5', 
+          width: 180, 
+          height: 60 
+        };
+        break;
       case 'granteeNode':
         newNode.style = { 
-          backgroundColor: '#4a90e2', 
+          backgroundColor: data.isFinal ? '#6E59A5' : '#7E69AB', 
           width: 180, 
           height: 60 
         };
@@ -270,7 +317,7 @@ const useStore = create((set, get) => ({
         break;
       case 'retainedRightsNode':
         newNode.style = { 
-          backgroundColor: '#4a90e2', 
+          backgroundColor: '#7E69AB', 
           width: 180, 
           height: 90 
         };
@@ -290,6 +337,42 @@ const useStore = create((set, get) => ({
     });
   },
   
+  // Update node data
+  updateNodeData: (nodeId, key, value) => {
+    set({
+      nodes: get().nodes.map(node => {
+        if (node.id === nodeId) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              [key]: value
+            }
+          };
+        }
+        return node;
+      })
+    });
+  },
+  
+  // Update edge data
+  updateEdgeData: (edgeId, key, value) => {
+    set({
+      edges: get().edges.map(edge => {
+        if (edge.id === edgeId) {
+          return {
+            ...edge,
+            data: {
+              ...edge.data,
+              [key]: value
+            }
+          };
+        }
+        return edge;
+      })
+    });
+  },
+  
   // Set node color
   setNodeColor: (id, color) => {
     set({
@@ -304,6 +387,24 @@ const useStore = create((set, get) => ({
           };
         }
         return node;
+      }),
+    });
+  },
+  
+  // Set edge color
+  setEdgeColor: (id, color) => {
+    set({
+      edges: get().edges.map((edge) => {
+        if (edge.id === id) {
+          return {
+            ...edge,
+            style: {
+              ...edge.style,
+              stroke: color,
+            },
+          };
+        }
+        return edge;
       }),
     });
   },

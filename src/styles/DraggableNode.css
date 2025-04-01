@@ -8,6 +8,7 @@
   cursor: grab;
   margin-bottom: 5px;
   transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
 }
 
 .draggable-node:hover {
@@ -18,6 +19,14 @@
 .node-grantor, .node-grantee, .node-retained-rights {
   background-color: #4a90e2;
   color: white;
+}
+
+.node-grantor {
+  background-color: #9b87f5; /* Primary purple for grantor */
+}
+
+.node-grantee {
+  background-color: #7E69AB; /* Secondary purple for grantee */
 }
 
 .node-instrument {
@@ -33,4 +42,81 @@
   align-items: center;
   justify-content: center;
   margin: 0 auto;
+}
+
+.node-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.node-resizers {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+.resizer {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: white;
+  border: 1px solid #4a90e2;
+  border-radius: 50%;
+  z-index: 2;
+}
+
+.resizer-r {
+  right: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: e-resize;
+}
+
+.resizer-b {
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: s-resize;
+}
+
+.resizer-br {
+  bottom: -4px;
+  right: -4px;
+  cursor: se-resize;
+}
+
+.editable-content {
+  min-width: 20px;
+  min-height: 16px;
+  outline: none;
+  word-wrap: break-word;
+}
+
+.editable-content:focus {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.editable-input {
+  background: transparent;
+  border: none;
+  color: inherit;
+  width: 90%;
+  text-align: center;
+  margin: 2px 0;
+  padding: 2px;
+}
+
+.editable-input:focus {
+  background-color: rgba(255, 255, 255, 0.2);
+  outline: none;
+}
+
+.node-note {
+  font-size: 10px;
+  font-style: italic;
+  margin-top: 4px;
+  text-align: left;
 }

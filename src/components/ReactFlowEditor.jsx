@@ -1,5 +1,5 @@
 
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import {
   ReactFlow,
   Background,
@@ -42,10 +42,12 @@ const ReactFlowEditor = ({
   onEdgesChange, 
   onConnect,
   onNodeClick,
-  onPaneClick
+  onPaneClick,
+  onEdgeClick
 }) => {
   const reactFlow = useReactFlow();
-  const { addNode } = useStore();
+  const { addNode, updateNodeData, updateEdgeData } = useStore();
+  const [selectedEdge, setSelectedEdge] = useState(null);
 
   const onDragOver = useCallback((event) => {
     event.preventDefault();
@@ -65,11 +67,35 @@ const ReactFlowEditor = ({
         y: event.clientY,
       });
 
-      // Add the new node
-      addNode(type, position, nodeData);
+      // Handle different types of grantee nodes
+      if (type === 'granteeNode') {
+        if (nodeData.isFinal) {
+          addNode(type, position, { ...nodeData, isFinal: true });
+        } else {
+          addNode(type, position, nodeData);
+        }
+      } else {
+        // Add any other type of node
+        addNode(type, position, nodeData);
+      }
     },
     [reactFlow, addNode]
   );
+
+  const handleEdgeClick = (event, edge) => {
+    setSelectedEdge(edge);
+    if (onEdgeClick) {
+      onEdgeClick(event, edge);
+    }
+  };
+
+  const handleNodeDataChange = (nodeId, key, value) => {
+    updateNodeData(nodeId, key, value);
+  };
+
+  const handleEdgeColorChange = (edgeId, color) => {
+    updateEdgeData(edgeId, 'color', color);
+  };
 
   return (
     <ReactFlow
@@ -84,8 +110,10 @@ const ReactFlowEditor = ({
       edgeTypes={edgeTypes}
       fitView
       onNodeClick={onNodeClick}
+      onEdgeClick={handleEdgeClick}
       onPaneClick={onPaneClick}
       deleteKeyCode={['Backspace', 'Delete']}
+      nodesDraggable={true}
     >
       <Controls />
       <MiniMap />

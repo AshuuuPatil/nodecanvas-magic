@@ -65,6 +65,22 @@
   border-radius: 5px;
 }
 
+.final-grantee {
+  background-color: #6E59A5;
+}
+
+.node-type-indicator {
+  font-size: 8px;
+  margin-top: 5px;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  padding: 2px 4px;
+}
+
+.node-type-indicator.final {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
 /* Handle positioning and styles */
 .react-flow__handle {
   width: 8px;
@@ -74,4 +90,57 @@
 
 .react-flow__handle:hover {
   background-color: #999;
+}
+
+/* Added styles for resizable nodes */
+.react-flow__node-resizer {
+  border-color: transparent;
+}
+
+.react-flow__node-resizer__handle {
+  width: 7px;
+  height: 7px;
+  background-color: #fff;
+  border: 1px solid #1a192b;
+}
+
+.react-flow__node-resizer__handle:hover {
+  background-color: #f0f0f0;
+}
+
+/* Edge color indicator swatches */
+.edge-color-guide {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.edge-color-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+}
+
+.color-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.death-color {
+  background-color: #ea384c;
+}
+
+.affidavit-color {
+  background-color: #FFD700;
+}
+
+.obituary-color {
+  background-color: #1EAEDB;
+}
+
+.adoption-color {
+  background-color: #4CAF50;
 }

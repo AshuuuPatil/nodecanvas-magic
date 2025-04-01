@@ -8,11 +8,13 @@ import useStore from '../store/flowStore';
 import DraggableNode from './DraggableNode';
 import '../styles/ControlPanel.css';
 
-const ControlPanel = ({ reactFlowWrapper, selectedNode }) => {
+const ControlPanel = ({ reactFlowWrapper, selectedNode, selectedEdge }) => {
   const { getNodes, getEdges, setViewport } = useReactFlow();
-  const { resetFlow, loadFlow, setNodeColor, rotateNode } = useStore();
-  const [color, setColor] = useState('#4a90e2');
-  const [showColorPicker, setShowColorPicker] = useState(false);
+  const { resetFlow, setNodeColor, rotateNode, setEdgeColor } = useStore();
+  const [nodeColor, setNodeColorState] = useState('#4a90e2');
+  const [edgeColor, setEdgeColorState] = useState('#000000');
+  const [showNodeColorPicker, setShowNodeColorPicker] = useState(false);
+  const [showEdgeColorPicker, setShowEdgeColorPicker] = useState(false);
   const colorPickerRef = useRef(null);
 
   // Save flow as JSON
@@ -67,29 +69,21 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode }) => {
     setViewport({ x: 0, y: 0, zoom: 1 });
   }, [resetFlow, setViewport]);
 
-  // File input for loading a saved flow
-  const onFileChange = (event) => {
-    const fileReader = new FileReader();
-    fileReader.onload = (e) => {
-      try {
-        const flow = JSON.parse(e.target.result);
-        loadFlow(flow);
-      } catch (error) {
-        console.error('Error loading flow:', error);
-      }
-    };
-    fileReader.readAsText(event.target.files[0]);
-    // Reset the input value so the same file can be loaded again
-    event.target.value = null;
-  };
-
   // Apply color to selected node
-  const applyColor = useCallback(() => {
+  const applyNodeColor = useCallback(() => {
     if (selectedNode) {
-      setNodeColor(selectedNode.id, color);
+      setNodeColor(selectedNode.id, nodeColor);
     }
-    setShowColorPicker(false);
-  }, [selectedNode, color, setNodeColor]);
+    setShowNodeColorPicker(false);
+  }, [selectedNode, nodeColor, setNodeColor]);
+
+  // Apply color to selected edge
+  const applyEdgeColor = useCallback(() => {
+    if (selectedEdge) {
+      setEdgeColor(selectedEdge.id, edgeColor);
+    }
+    setShowEdgeColorPicker(false);
+  }, [selectedEdge, edgeColor, setEdgeColor]);
 
   // Handle node rotation
   const handleRotate = useCallback(() => {
@@ -136,8 +130,21 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode }) => {
           <DraggableNode 
             type="granteeNode" 
             onDragStart={onDragStart} 
-            data={{ label: 'Grantee' }}
-            label="Grantee"
+            data={{ 
+              label: 'Grantee (Extendable)',
+              isFinal: false
+            }}
+            label="Grantee (Extendable)"
+            className="node-grantee"
+          />
+          <DraggableNode 
+            type="granteeNode" 
+            onDragStart={onDragStart} 
+            data={{ 
+              label: 'Grantee (Final)',
+              isFinal: true
+            }}
+            label="Grantee (Final)"
             className="node-grantee"
           />
           <DraggableNode 
@@ -158,9 +165,43 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode }) => {
             onDragStart={onDragStart} 
             data={{ 
               label: 'Death Certificate',
-              details: '• Details'
+              details: '• Details',
+              type: 'death'
             }}
-            label="Certificate"
+            label="Death Certificate"
+            className="node-bubble"
+          />
+          <DraggableNode 
+            type="bubbleNode" 
+            onDragStart={onDragStart} 
+            data={{ 
+              label: 'Affidavit of Heirship',
+              details: '• Details',
+              type: 'affidavit'
+            }}
+            label="Affidavit"
+            className="node-bubble"
+          />
+          <DraggableNode 
+            type="bubbleNode" 
+            onDragStart={onDragStart} 
+            data={{ 
+              label: 'Obituary',
+              details: '• Details',
+              type: 'obituary'
+            }}
+            label="Obituary"
+            className="node-bubble"
+          />
+          <DraggableNode 
+            type="bubbleNode" 
+            onDragStart={onDragStart} 
+            data={{ 
+              label: 'Adoption / Divorce',
+              details: '• Details',
+              type: 'adoption'
+            }}
+            label="Adoption"
             className="node-bubble"
           />
         </div>
@@ -183,15 +224,6 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode }) => {
           >
             Reset
           </button>
-          <label className="btn-action" title="Load saved flow">
-            Load Flow
-            <input
-              type="file"
-              accept=".json"
-              onChange={onFileChange}
-              style={{ display: 'none' }}
-            />
-          </label>
           <button 
             className="btn-action" 
             onClick={onSaveImage}
@@ -208,7 +240,7 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode }) => {
           <div className="node-actions">
             <button 
               className="btn-action"
-              onClick={() => setShowColorPicker(!showColorPicker)}
+              onClick={() => setShowNodeColorPicker(!showNodeColorPicker)}
               title="Change node color"
             >
               Change Color
@@ -221,12 +253,12 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode }) => {
               Rotate
             </button>
           </div>
-          {showColorPicker && (
+          {showNodeColorPicker && (
             <div className="color-picker-container" ref={colorPickerRef}>
-              <HexColorPicker color={color} onChange={setColor} />
+              <HexColorPicker color={nodeColor} onChange={setNodeColorState} />
               <button 
                 className="btn-apply-color"
-                onClick={applyColor}
+                onClick={applyNodeColor}
               >
                 Apply
               </button>
@@ -234,6 +266,54 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode }) => {
           )}
         </div>
       )}
+
+      {selectedEdge && (
+        <div className="panel-section">
+          <h3>Selected Edge</h3>
+          <div className="edge-actions">
+            <button 
+              className="btn-action"
+              onClick={() => setShowEdgeColorPicker(!showEdgeColorPicker)}
+              title="Change edge color"
+            >
+              Change Edge Color
+            </button>
+          </div>
+          {showEdgeColorPicker && (
+            <div className="color-picker-container" ref={colorPickerRef}>
+              <HexColorPicker color={edgeColor} onChange={setEdgeColorState} />
+              <button 
+                className="btn-apply-color"
+                onClick={applyEdgeColor}
+              >
+                Apply
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="panel-section">
+        <h3>Edge Colors</h3>
+        <div className="edge-color-guide">
+          <div className="edge-color-item">
+            <div className="color-swatch death-color"></div>
+            <span>Death Certificate</span>
+          </div>
+          <div className="edge-color-item">
+            <div className="color-swatch affidavit-color"></div>
+            <span>Affidavit of Heirship</span>
+          </div>
+          <div className="edge-color-item">
+            <div className="color-swatch obituary-color"></div>
+            <span>Obituary</span>
+          </div>
+          <div className="edge-color-item">
+            <div className="color-swatch adoption-color"></div>
+            <span>Adoption/Divorce</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
