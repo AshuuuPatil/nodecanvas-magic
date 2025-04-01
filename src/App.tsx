@@ -1,3 +1,4 @@
+import React from 'react';
 
 import { ReactFlowProvider } from '@xyflow/react';
 import { Toaster } from "@/components/ui/toaster";
@@ -8,6 +9,14 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
+
+import Navbar from './components/Navbar';
+import Sidebar from './components/Sidebar';
+
+import './styles/Navbar.css';
+import './styles/Sidebar.css';
+
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -17,10 +26,20 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+         {/* Navbar and Sidebar Layout */}
+          <div className="app">
+            <Navbar />
+              <div style={{ display: "flex" }}>
+                <Sidebar />
+                {/* Main Content Area */}
+                <main className="content" style={{ marginLeft: '200px', padding: '20px', flexGrow: 1 }}>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </main>
+              </div>
+          </div>
         </BrowserRouter>
       </TooltipProvider>
     </ReactFlowProvider>

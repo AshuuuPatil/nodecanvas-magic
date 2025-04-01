@@ -1,0 +1,33 @@
+.sidebar {
+    background-color: #f4f4f4;
+    padding: 1rem;
+    width: 200px;
+    height: 100vh; /* Full height sidebar */
+    position: fixed; /* Fixed position */
+    top: 0; /* Align to the top */
+    left: 0; /* Align to the left */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.sidebar h2 {
+    margin-bottom: 1rem; /* Space below the heading */
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar li {
+    margin-bottom: 1rem; /* Space between items */
+}
+
+.sidebar a {
+    text-decoration: none; /* Remove underline */
+    color: #333; /* Link color */
+    transition: color 0.3s; /* Smooth color transition */
+}
+
+.sidebar a:hover {
+    color: #007bff; /* Change color on hover */
+}
