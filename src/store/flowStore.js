@@ -28,56 +28,11 @@ const initialNodes = [
         'Execution Date',
         'Effective Date',
         'Filed Date',
-        '-User Notes-',
         'Transfered Rights'
       ],
       note: 'Additional notes can be added here'
     },
-    style: { backgroundColor: '#f5f5f5', border: '1px solid #ccc', width: 220, height: 130 }
-  },
-  {
-    id: '3',
-    type: 'bubbleNode',
-    position: { x: 600, y: 110 },
-    data: { 
-      label: 'Death Certificate',
-      details: '• Details',
-      type: 'death'
-    },
-    style: { width: 120, height: 80, borderRadius: '0' }
-  },
-  {
-    id: '4',
-    type: 'bubbleNode',
-    position: { x: 600, y: 160 },
-    data: { 
-      label: 'Affidavit of Heirship',
-      details: '• Details',
-      type: 'affidavit'
-    },
-    style: { width: 120, height: 80, borderRadius: '0' }
-  },
-  {
-    id: '5',
-    type: 'bubbleNode',
-    position: { x: 600, y: 210 },
-    data: { 
-      label: 'Obituary',
-      details: '• Details',
-      type: 'obituary'
-    },
-    style: { width: 120, height: 70, borderRadius: '0' }
-  },
-  {
-    id: '6',
-    type: 'bubbleNode',
-    position: { x: 600, y: 270 },
-    data: { 
-      label: 'Adoption / Divorce',
-      details: '• Details',
-      type: 'adoption'
-    },
-    style: { width: 120, height: 80, borderRadius: '0' }
+    style: { backgroundColor: '#f5f5f5', border: '1px solid #ccc', width: 220, height: 'auto' }
   },
   {
     id: '7',
@@ -322,6 +277,7 @@ const useStore = create((set, get) => ({
     set({
       nodes: applyNodeChanges(changes, get().nodes),
     });
+    // Mark that we have unsaved changes
   },
   
   // Apply edge changes
@@ -329,12 +285,22 @@ const useStore = create((set, get) => ({
     set({
       edges: applyEdgeChanges(changes, get().edges),
     });
+    // Mark that we have unsaved changes
   },
   
   // Connect nodes with edges
   onConnect: (connection) => {
-    // Get target node to determine edge color based on node type
+    // Get source and target nodes to determine if we should allow the connection
+    const sourceNode = get().nodes.find(node => node.id === connection.source);
     const targetNode = get().nodes.find(node => node.id === connection.target);
+    
+    // Prevent connections from regular grantee nodes (but allow from retained rights grantee)
+    if (sourceNode && sourceNode.type === 'granteeNode' && 
+        !(sourceNode.data.label && sourceNode.data.label.includes('Also Grantor'))) {
+      return;
+    }
+    
+    // Get target node to determine edge color based on node type
     let edgeData = { type: 'default' };
     
     if (targetNode) {
@@ -370,14 +336,16 @@ const useStore = create((set, get) => ({
         newNode.style = { 
           backgroundColor: '#9b87f5', 
           width: 180, 
-          height: 60 
+          height: 'auto',
+          minHeight: 60
         };
         break;
       case 'granteeNode':
         newNode.style = { 
           backgroundColor: '#7E69AB', 
           width: 180, 
-          height: 60 
+          height: 'auto',
+          minHeight: 60
         };
         break;
       case 'instrumentNode':
@@ -385,20 +353,23 @@ const useStore = create((set, get) => ({
           backgroundColor: '#f5f5f5', 
           border: '1px solid #ccc', 
           width: 220, 
-          height: 130 
+          height: 'auto',
+          minHeight: 130
         };
         break;
       case 'retainedRightsNode':
         newNode.style = { 
           backgroundColor: '#7E69AB', 
           width: 180, 
-          height: 90 
+          height: 'auto',
+          minHeight: 90
         };
         break;
       case 'bubbleNode':
         newNode.style = { 
           width: 120, 
-          height: 80,
+          height: 'auto',
+          minHeight: 80,
           borderRadius: '0'
         };
         break;
@@ -421,6 +392,36 @@ const useStore = create((set, get) => ({
             data: {
               ...node.data,
               [key]: value
+            }
+          };
+        }
+        return node;
+      })
+    });
+  },
+  
+  // Convert node type
+  convertNodeType: (nodeId, newType, newData) => {
+    set({
+      nodes: get().nodes.map(node => {
+        if (node.id === nodeId) {
+          return {
+            ...node,
+            type: newType,
+            data: {
+              ...node.data,
+              ...newData
+            },
+            style: {
+              ...node.style,
+              // Adjust style based on new type
+              ...(newType === 'bubbleNode' ? { 
+                backgroundColor: 'white',
+                border: '1px solid #ccc',
+                width: 150,
+                height: 'auto',
+                minHeight: 80
+              } : {})
             }
           };
         }
@@ -530,6 +531,61 @@ const useStore = create((set, get) => ({
   // Get file by ID
   getFileById: (id) => {
     return get().fileData.find(file => file.id === id);
+  },
+  
+  // Save flow to localStorage
+  saveFlowToLocalStorage: (fileId, nodes, edges) => {
+    try {
+      const flowData = {
+        id: fileId,
+        nodes,
+        edges,
+        timestamp: new Date().toISOString()
+      };
+      
+      // Get existing saved flows
+      const savedFlowsString = localStorage.getItem('savedFlows');
+      let savedFlows = savedFlowsString ? JSON.parse(savedFlowsString) : {};
+      
+      // Add or update this flow
+      savedFlows[fileId] = flowData;
+      
+      // Save back to localStorage
+      localStorage.setItem('savedFlows', JSON.stringify(savedFlows));
+      
+      return true;
+    } catch (error) {
+      console.error('Error saving flow:', error);
+      return false;
+    }
+  },
+  
+  // Load flow from localStorage
+  loadFlowFromLocalStorage: (fileId) => {
+    try {
+      const savedFlowsString = localStorage.getItem('savedFlows');
+      if (!savedFlowsString) return null;
+      
+      const savedFlows = JSON.parse(savedFlowsString);
+      return savedFlows[fileId] || null;
+    } catch (error) {
+      console.error('Error loading flow:', error);
+      return null;
+    }
+  },
+  
+  // Get all saved flows
+  getAllSavedFlows: () => {
+    try {
+      const savedFlowsString = localStorage.getItem('savedFlows');
+      if (!savedFlowsString) return [];
+      
+      const savedFlows = JSON.parse(savedFlowsString);
+      return Object.values(savedFlows);
+    } catch (error) {
+      console.error('Error getting saved flows:', error);
+      return [];
+    }
   }
 }));
 
