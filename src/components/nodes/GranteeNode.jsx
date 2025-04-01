@@ -5,7 +5,6 @@ import { Handle, Position, NodeResizer } from '@xyflow/react';
 const GranteeNode = ({ data, isConnectable, selected, style }) => {
   const [label, setLabel] = useState(data.label || 'Grantee');
   const [note, setNote] = useState(data.note || '');
-  const isFinal = data.isFinal || false;
   
   // Update the data object when label changes
   const handleLabelChange = (e) => {
@@ -26,7 +25,7 @@ const GranteeNode = ({ data, isConnectable, selected, style }) => {
   };
 
   return (
-    <div className={`grantee-node ${isFinal ? 'final-grantee' : ''}`} style={style}>
+    <div className="grantee-node" style={style}>
       <NodeResizer 
         minWidth={100} 
         minHeight={40}
@@ -37,13 +36,11 @@ const GranteeNode = ({ data, isConnectable, selected, style }) => {
         position={Position.Top}
         isConnectable={isConnectable}
       />
-      {!isFinal && (
-        <Handle
-          type="source"
-          position={Position.Bottom}
-          isConnectable={isConnectable}
-        />
-      )}
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        isConnectable={isConnectable}
+      />
       <div 
         className="node-label editable-content"
         contentEditable
@@ -61,12 +58,6 @@ const GranteeNode = ({ data, isConnectable, selected, style }) => {
       >
         {note}
       </div>
-      {!isFinal && (
-        <div className="node-type-indicator">Extendable</div>
-      )}
-      {isFinal && (
-        <div className="node-type-indicator final">Final</div>
-      )}
     </div>
   );
 };

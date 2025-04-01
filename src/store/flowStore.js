@@ -1,4 +1,3 @@
-
 import { create } from 'zustand';
 import {
   addEdge,
@@ -7,7 +6,7 @@ import {
 } from '@xyflow/react';
 import { nanoid } from 'nanoid';
 
-// Initial nodes based on the provided image
+// Initial nodes with modifications (removed note bubble)
 const initialNodes = [
   {
     id: '1',
@@ -45,7 +44,7 @@ const initialNodes = [
       details: '• Details',
       type: 'death'
     },
-    style: { width: 120, height: 80 }
+    style: { width: 120, height: 80, borderRadius: '0' }
   },
   {
     id: '4',
@@ -56,7 +55,7 @@ const initialNodes = [
       details: '• Details',
       type: 'affidavit'
     },
-    style: { width: 120, height: 80 }
+    style: { width: 120, height: 80, borderRadius: '0' }
   },
   {
     id: '5',
@@ -67,7 +66,7 @@ const initialNodes = [
       details: '• Details',
       type: 'obituary'
     },
-    style: { width: 120, height: 70 }
+    style: { width: 120, height: 70, borderRadius: '0' }
   },
   {
     id: '6',
@@ -78,16 +77,15 @@ const initialNodes = [
       details: '• Details',
       type: 'adoption'
     },
-    style: { width: 120, height: 80 }
+    style: { width: 120, height: 80, borderRadius: '0' }
   },
   {
     id: '7',
     type: 'granteeNode',
     position: { x: 150, y: 400 },
     data: { 
-      label: 'Grantee (Extendable)',
-      note: 'Click to edit notes',
-      isFinal: false
+      label: 'Grantee',
+      note: 'Click to edit notes'
     },
     style: { backgroundColor: '#7E69AB', width: 180, height: 60 }
   },
@@ -96,9 +94,8 @@ const initialNodes = [
     type: 'granteeNode',
     position: { x: 350, y: 400 },
     data: { 
-      label: 'Grantee (Extendable)',
-      note: 'Click to edit notes',
-      isFinal: false
+      label: 'Grantee',
+      note: 'Click to edit notes'
     },
     style: { backgroundColor: '#7E69AB', width: 180, height: 60 }
   },
@@ -107,9 +104,8 @@ const initialNodes = [
     type: 'granteeNode',
     position: { x: 550, y: 400 },
     data: { 
-      label: 'Grantee (Final)',
-      note: 'Final grantee - cannot extend',
-      isFinal: true
+      label: 'Grantee',
+      note: 'Click to edit notes'
     },
     style: { backgroundColor: '#6E59A5', width: 180, height: 60 }
   },
@@ -128,25 +124,9 @@ const initialNodes = [
     },
     style: { backgroundColor: '#7E69AB', width: 180, height: 90 }
   },
-  {
-    id: '11',
-    type: 'bubbleNode',
-    position: { x: 660, y: 50 },
-    data: { 
-      label: 'Assignments are the "Instrument Type" and Evidence are in these bubbles to the side.',
-      details: '',
-      isNote: true
-    },
-    style: { 
-      backgroundColor: '#fef7cd', 
-      border: '1px solid #e8d85b',
-      width: 160,
-      height: 80 
-    }
-  },
 ];
 
-// Initial edges based on the provided image
+// Initial edges (unchanged)
 const initialEdges = [
   { 
     id: 'e1-2', 
@@ -239,10 +219,103 @@ const initialEdges = [
   },
 ];
 
+// Sample data for the table
+const fileData = [
+  {
+    "id": 4155,
+    "project_id_x": 167,
+    "file_name": "file_2220",
+    "ocr_status": "completed",
+    "instrument_type": "Release",
+    "volume_page": "none found",
+    "document_case": "none found",
+    "execution_date": "1939-12-23 00:00:00",
+    "effective_date": null,
+    "file_date": "1940-02-15 00:00:00",
+    "file_id": 2220,
+    "user_id_x": 2,
+    "grantor": "W. H. Mannes",
+    "grantee": "Tom Petrucha and Julia Petrucha",
+    "remarks": null,
+    "property_description": "The East 50 acres of the 165.3 acre tract in the D. McFarland League, and the East 766 acres of the 1316 acre tract in the F. W. Dempsey Survey.",
+    "project_id_y": 167,
+    "user_id_y": 2,
+    "s3_url": "https://titlemine-app.s3.amazonaws.com/runsheet_documents/2025-03-27_02%3A40%3A49_67e4bab1e671c.pdf",
+    "original_file_name": "DR 132-459 Rel OGL 1481.3Ac.pdf"
+  },
+  {
+    "id": 4156,
+    "project_id_x": 167,
+    "file_name": "file_2221",
+    "ocr_status": "completed",
+    "instrument_type": "Affidavit",
+    "volume_page": "none found",
+    "document_case": "#48937-Affidavit",
+    "execution_date": "1951-06-02 00:00:00",
+    "effective_date": null,
+    "file_date": "1951-06-12 00:00:00",
+    "file_id": 2221,
+    "user_id_x": 2,
+    "grantor": "Ella Gibson et al",
+    "grantee": "Allen Hoppe",
+    "remarks": null,
+    "property_description": "Quitclaimed property in Matagorda County, Texas for $10.00.",
+    "project_id_y": 167,
+    "user_id_y": 2,
+    "s3_url": "https://titlemine-app.s3.amazonaws.com/runsheet_documents/2025-03-27_02%3A40%3A50_67e4bab2236e0.pdf",
+    "original_file_name": "DR 225-368 DR Affidavit.pdf"
+  },
+  {
+    "id": 4318,
+    "project_id_x": 167,
+    "file_name": "file_2283",
+    "ocr_status": "Completed",
+    "instrument_type": "Deed",
+    "volume_page": "9/229",
+    "document_case": "No.1 16512",
+    "execution_date": "1902-05-21 00:00:00",
+    "effective_date": null,
+    "file_date": "1902-05-23 00:00:00",
+    "file_id": 2283,
+    "user_id_x": 2,
+    "grantor": "Joseph Petrucio and Catherine Mary Petrucio",
+    "grantee": "Thomas Petrucio",
+    "remarks": null,
+    "property_description": "A tract of 476 acres of the Francis H. Dempsey league, along with additional specified parcels in Matagorda County.",
+    "project_id_y": 167,
+    "user_id_y": 2,
+    "s3_url": "https://titlemine-app.s3.amazonaws.com/runsheet_documents/2025-03-28_06%3A48%3A00_67e64620b715e.pdf",
+    "original_file_name": "DR 9-229 Petrucha Deed.pdf"
+  },
+  {
+    "id": 4319,
+    "project_id_x": 167,
+    "file_name": "file_2284",
+    "ocr_status": "Completed",
+    "instrument_type": "Deed",
+    "volume_page": "1331/150",
+    "document_case": "none found",
+    "execution_date": "1975-12-16 00:00:00",
+    "effective_date": null,
+    "file_date": "1976-01-05 00:00:00",
+    "file_id": 2284,
+    "user_id_x": 2,
+    "grantor": "W. C. King and Nancy E. King",
+    "grantee": "Joe C. King and Katie Mae King",
+    "remarks": null,
+    "property_description": "3.086 acres of land in the Elihu Reynolds Survey, Abstract No. 1008, the Juan Armendaris Survey, Abstract No. 39, and the J. C. Marshall Survey, Abstract No. 825, Grayson County, Texas.",
+    "project_id_y": 167,
+    "user_id_y": 2,
+    "s3_url": "https://titlemine-app.s3.amazonaws.com/runsheet_documents/2025-03-28_06%3A48%3A00_67e64620f3660.pdf",
+    "original_file_name": "1331_150_Grayson County.pdf"
+  }
+];
+
 // Create the store
 const useStore = create((set, get) => ({
   nodes: initialNodes,
   edges: initialEdges,
+  fileData: fileData,
   
   // Apply node changes
   onNodesChange: (changes) => {
@@ -302,7 +375,7 @@ const useStore = create((set, get) => ({
         break;
       case 'granteeNode':
         newNode.style = { 
-          backgroundColor: data.isFinal ? '#6E59A5' : '#7E69AB', 
+          backgroundColor: '#7E69AB', 
           width: 180, 
           height: 60 
         };
@@ -325,7 +398,8 @@ const useStore = create((set, get) => ({
       case 'bubbleNode':
         newNode.style = { 
           width: 120, 
-          height: 80 
+          height: 80,
+          borderRadius: '0'
         };
         break;
       default:
@@ -452,6 +526,11 @@ const useStore = create((set, get) => ({
   // Set the nodes and edges directly
   setNodes: (nodes) => set({ nodes }),
   setEdges: (edges) => set({ edges }),
+  
+  // Get file by ID
+  getFileById: (id) => {
+    return get().fileData.find(file => file.id === id);
+  }
 }));
 
 export default useStore;

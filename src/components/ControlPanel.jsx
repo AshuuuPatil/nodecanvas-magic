@@ -17,19 +17,6 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode, selectedEdge }) => {
   const [showEdgeColorPicker, setShowEdgeColorPicker] = useState(false);
   const colorPickerRef = useRef(null);
 
-  // Save flow as JSON
-  const onSave = useCallback(() => {
-    const flow = {
-      nodes: getNodes(),
-      edges: getEdges(),
-    };
-    const jsonString = JSON.stringify(flow, null, 2);
-    
-    // Create a sample JSON file to download
-    const blob = new Blob([jsonString], { type: 'application/json' });
-    saveAs(blob, 'flow.json');
-  }, [getNodes, getEdges]);
-
   // Save as image
   const onSaveImage = useCallback(() => {
     if (reactFlowWrapper.current === null) return;
@@ -131,20 +118,9 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode, selectedEdge }) => {
             type="granteeNode" 
             onDragStart={onDragStart} 
             data={{ 
-              label: 'Grantee (Extendable)',
-              isFinal: false
+              label: 'Grantee'
             }}
-            label="Grantee (Extendable)"
-            className="node-grantee"
-          />
-          <DraggableNode 
-            type="granteeNode" 
-            onDragStart={onDragStart} 
-            data={{ 
-              label: 'Grantee (Final)',
-              isFinal: true
-            }}
-            label="Grantee (Final)"
+            label="Grantee"
             className="node-grantee"
           />
           <DraggableNode 
@@ -210,13 +186,6 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode, selectedEdge }) => {
       <div className="panel-section">
         <h3>Actions</h3>
         <div className="action-buttons">
-          <button 
-            className="btn-action" 
-            onClick={onSave}
-            title="Save flow as JSON"
-          >
-            Save Flow
-          </button>
           <button 
             className="btn-action" 
             onClick={onReset}

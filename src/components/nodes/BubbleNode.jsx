@@ -44,8 +44,8 @@ const BubbleNode = ({ data, isConnectable, selected, style }) => {
   
   return (
     <div 
-      className={`bubble-node ${isNote ? 'note-bubble' : ''}`} 
-      style={style}
+      className={`bubble-node square-node ${isNote ? 'note-bubble' : ''}`} 
+      style={{...style, borderRadius: '0'}}
     >
       <NodeResizer 
         minWidth={80} 

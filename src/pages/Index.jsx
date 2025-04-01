@@ -1,6 +1,7 @@
 
 import { useCallback, useRef, useState } from 'react';
 import { ReactFlowProvider } from '@xyflow/react';
+import { Link } from 'react-router-dom';
 import ReactFlowEditor from '../components/ReactFlowEditor';
 import ControlPanel from '../components/ControlPanel';
 import useStore from '../store/flowStore';
@@ -31,23 +32,31 @@ const Index = () => {
 
   return (
     <ReactFlowProvider>
-      <div className="flow-editor-container">
-        <ControlPanel 
-          reactFlowWrapper={reactFlowWrapper} 
-          selectedNode={selectedNode}
-          selectedEdge={selectedEdge}
-        />
-        <div className="reactflow-wrapper" ref={reactFlowWrapper}>
-          <ReactFlowEditor
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            onNodeClick={handleNodeClick}
-            onEdgeClick={handleEdgeClick}
-            onPaneClick={handlePaneClick}
+      <div className="app-container">
+        <div className="app-header">
+          <h1>Flow Chart Editor</h1>
+          <div className="nav-links">
+            <Link to="/table" className="nav-link">View Document Table</Link>
+          </div>
+        </div>
+        <div className="flow-editor-container">
+          <ControlPanel 
+            reactFlowWrapper={reactFlowWrapper} 
+            selectedNode={selectedNode}
+            selectedEdge={selectedEdge}
           />
+          <div className="reactflow-wrapper" ref={reactFlowWrapper}>
+            <ReactFlowEditor
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              onNodeClick={handleNodeClick}
+              onEdgeClick={handleEdgeClick}
+              onPaneClick={handlePaneClick}
+            />
+          </div>
         </div>
       </div>
     </ReactFlowProvider>
