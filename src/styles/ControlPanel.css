@@ -67,3 +67,9 @@
 .btn-apply-color:hover {
   background-color: #3a80d2;
 }
+
+.edge-actions {
+  display: flex;
+  flex-direction: column; /* Stack buttons vertically */
+  gap: 8px; /* Add spacing between buttons */
+}

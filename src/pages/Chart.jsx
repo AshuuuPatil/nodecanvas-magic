@@ -80,9 +80,25 @@ const Chart = () => {
             `Transfered Rights`
           ],
           note: file.property_description || 'Additional notes can be added here',
-          s3Url: file.s3_url || ''
+          s3Url: file.s3_url || '',
+          viewButton: () => {
+            // Define the action for the "View" button
+            window.open(file.s3_url, '_blank');
+          },
+          menuOptions: [
+            'Death Certificate',
+            'Affidavit of Heirship',
+            'Obituary',
+            'Adoption'
+          ]
         },
-        style: { backgroundColor: '#f5f5f5', border: '1px solid #ccc', width: 250, height: 'auto' }
+        style: { 
+          backgroundColor: '#f5f5f5', 
+          border: '1px solid #ccc', 
+          width: 250, 
+          height: 'auto',
+          position: 'relative' // Ensure relative positioning for the button
+        },
       }
     ];
     
@@ -166,21 +182,18 @@ const Chart = () => {
       <ReactFlowProvider>
         <div className="flow-editor-container">
           {/* If there are saved flows, display them alongside the current flow */}
-          {savedFlows.length > 0 && (
+          {/* {savedFlows.length > 0 && (
             <div className="saved-flows-container">
               {savedFlows.map(flow => (
                 <div key={flow.id} className="saved-flow-preview">
-                  <h3>File ID: {flow.id}</h3>
+                  <h3>File ID: {flow.id}</h3> */}
                   {/* This would be a mini preview of the saved flow */}
-                </div>
+                {/*</div>
               ))}
             </div>
           )}
-          
-          <ControlPanel 
-            selectedNode={selectedNode}
-            selectedEdge={selectedEdge}
-          />
+           */}
+
           <div className="reactflow-wrapper">
             <ReactFlowEditor
               nodes={nodes}
@@ -193,6 +206,14 @@ const Chart = () => {
               onPaneClick={handlePaneClick}
             />
           </div>
+
+          <div className="control-panel-container">
+            <ControlPanel 
+              selectedNode={selectedNode}
+              selectedEdge={selectedEdge}
+            />
+          </div>
+
         </div>
       </ReactFlowProvider>
       

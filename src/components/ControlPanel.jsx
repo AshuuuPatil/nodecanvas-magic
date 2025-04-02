@@ -215,13 +215,29 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode, selectedEdge }) => {
             >
               Change Color
             </button>
-            <button 
+            
+            {/* <button 
               className="btn-action"
               onClick={handleRotate}
               title="Rotate node"
             >
               Rotate
+            </button> */}
+
+            <button 
+              className="btn-action"
+              onClick={() => {
+                if (selectedNode) {
+                  const updatedNodes = getNodes().filter(node => node.id !== selectedNode.id);
+                  const updatedEdges = getEdges().filter(edge => edge.source !== selectedNode.id && edge.target !== selectedNode.id);
+                  useStore.setState({ nodes: updatedNodes, edges: updatedEdges });
+                }
+              }}
+              title="Delete node"
+            >
+              Delete
             </button>
+
           </div>
           {showNodeColorPicker && (
             <div className="color-picker-container" ref={colorPickerRef}>
@@ -247,6 +263,19 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode, selectedEdge }) => {
               title="Change edge color"
             >
               Change Edge Color
+            </button>
+
+            <button 
+                className="btn-action"
+                onClick={() => {
+                  if (selectedEdge) {
+                    const updatedEdges = getEdges().filter(edge => edge.id !== selectedEdge.id);
+                    useStore.setState({ edges: updatedEdges });
+                  }
+                }}
+                title="Delete edge"
+              >
+                Delete Edge
             </button>
           </div>
           {showEdgeColorPicker && (

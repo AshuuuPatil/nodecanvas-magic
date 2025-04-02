@@ -47,15 +47,26 @@
   color: #555;
 }
 
-.flow-editor-container {
+/* .flow-editor-container {
   display: flex;
   flex: 1;
   width: 100%;
   height: calc(100vh - 70px);
+} */
+
+.flow-editor-container {
+  display: flex;
+  height: 100%;
+  position: relative;
 }
 
-.reactflow-wrapper {
+/* .reactflow-wrapper {
   flex-grow: 1;
+  height: 100%;
+} */
+
+.reactflow-wrapper {
+  flex: 1;
   height: 100%;
 }
 
@@ -164,4 +175,42 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.control-panel-container {
+  width: 300px; /* Adjust width as needed */
+  background-color: #f9f9f9; /* Optional: Add a background color */
+  border-left: 1px solid #ccc; /* Optional: Add a border */
+  padding: 16px; /* Optional: Add padding */
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1); /* Optional: Add shadow */
+  position: relative;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end; /* Align the button to the right */
+  margin-top: 10px; /* Add spacing above the button */
+}
+
+.instrument-node {
+  position: relative; /* Ensure relative positioning for absolute children */
+  padding-bottom: 20px; /* Add padding to ensure space for the button */
+}
+
+.instrument-node .node-details {
+  margin-bottom: 50px; /* Add spacing below the details */
+}
+
+.instrument-node button {
+  margin-top: 50px;
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.instrument-node button:hover {
+  background-color: #0056b3;
 }
