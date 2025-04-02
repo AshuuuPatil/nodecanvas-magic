@@ -32,23 +32,7 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode, selectedEdge }) => {
       .catch((error) => {
         console.error('Error saving image:', error);
       });
-
-    // Also generate JSON
-    const flow = {
-      nodes: getNodes().map(node => ({
-        id: node.id,
-        type: node.type,
-        data: node.data,
-        position: node.position,
-        style: node.style
-      })),
-      edges: getEdges()
-    };
-    
-    const jsonString = JSON.stringify(flow, null, 2);
-    const blob = new Blob([jsonString], { type: 'application/json' });
-    saveAs(blob, 'flow-data.json');
-  }, [reactFlowWrapper, getNodes, getEdges]);
+  }, [reactFlowWrapper]);
 
   // Reset the flow
   const onReset = useCallback(() => {
@@ -150,7 +134,7 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode, selectedEdge }) => {
         <div className="action-buttons">
           {(selectedNode || selectedEdge) && (
             <button 
-              className="btn-action" 
+              className="btn-action delete-button" 
               onClick={onDeleteSelected}
               title="Delete selected node or edge"
             >
@@ -158,14 +142,14 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode, selectedEdge }) => {
             </button>
           )}
           <button 
-            className="btn-action" 
+            className="btn-action reset-button" 
             onClick={onReset}
             title="Reset canvas"
           >
             Reset
           </button>
           <button 
-            className="btn-action" 
+            className="btn-action download-button" 
             onClick={onSaveImage}
             title="Export as image"
           >

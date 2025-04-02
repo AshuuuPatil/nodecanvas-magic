@@ -1,4 +1,3 @@
-
 import { create } from 'zustand';
 import {
   addEdge,
@@ -7,18 +6,8 @@ import {
 } from '@xyflow/react';
 import { nanoid } from 'nanoid';
 
-// Initial nodes with modifications (removed note bubble)
+// Initial nodes with only the instrument node
 const initialNodes = [
-  {
-    id: '1',
-    type: 'grantorNode',
-    position: { x: 350, y: 50 },
-    data: { 
-      label: 'Grantor',
-      note: 'Click to edit notes'
-    },
-    style: { backgroundColor: '#9b87f5', width: 180, height: 60 }
-  },
   {
     id: '2',
     type: 'instrumentNode',
@@ -34,146 +23,11 @@ const initialNodes = [
       note: 'Additional notes can be added here'
     },
     style: { backgroundColor: '#f5f5f5', border: '1px solid #ccc', width: 220, height: 'auto' }
-  },
-  {
-    id: '7',
-    type: 'granteeNode',
-    position: { x: 150, y: 400 },
-    data: { 
-      label: 'Grantee',
-      note: 'Click to edit notes'
-    },
-    style: { backgroundColor: '#7E69AB', width: 180, height: 60 }
-  },
-  {
-    id: '8',
-    type: 'granteeNode',
-    position: { x: 350, y: 400 },
-    data: { 
-      label: 'Grantee',
-      note: 'Click to edit notes'
-    },
-    style: { backgroundColor: '#7E69AB', width: 180, height: 60 }
-  },
-  {
-    id: '9',
-    type: 'granteeNode',
-    position: { x: 550, y: 400 },
-    data: { 
-      label: 'Grantee',
-      note: 'Click to edit notes'
-    },
-    style: { backgroundColor: '#6E59A5', width: 180, height: 60 }
-  },
-  {
-    id: '10',
-    type: 'retainedRightsNode',
-    position: { x: 750, y: 400 },
-    data: { 
-      label: 'Grantee (Also Grantor)',
-      details: [
-        '(Grantor with Retained Rights use dotted line.',
-        'This depicts ongoing ownership interest after',
-        'assignment)'
-      ],
-      note: 'Click to edit notes'
-    },
-    style: { backgroundColor: '#7E69AB', width: 180, height: 90 }
-  },
+  }
 ];
 
-// Initial edges (unchanged)
-const initialEdges = [
-  { 
-    id: 'e1-2', 
-    source: '1', 
-    target: '2', 
-    type: 'custom',
-    animated: false,
-    style: { stroke: '#000' },
-    data: { type: 'default' }
-  },
-  { 
-    id: 'e2-3', 
-    source: '2', 
-    target: '3', 
-    type: 'custom',
-    animated: false,
-    sourceHandle: 'right',
-    style: { stroke: '#ea384c' },
-    data: { type: 'death' }
-  },
-  { 
-    id: 'e2-4', 
-    source: '2', 
-    target: '4', 
-    type: 'custom',
-    animated: false,
-    sourceHandle: 'right',
-    style: { stroke: '#FFD700' },
-    data: { type: 'affidavit' }
-  },
-  { 
-    id: 'e2-5', 
-    source: '2', 
-    target: '5', 
-    type: 'custom',
-    animated: false,
-    sourceHandle: 'right',
-    style: { stroke: '#1EAEDB' },
-    data: { type: 'obituary' }
-  },
-  { 
-    id: 'e2-6', 
-    source: '2', 
-    target: '6', 
-    type: 'custom',
-    animated: false,
-    sourceHandle: 'right',
-    style: { stroke: '#4CAF50' },
-    data: { type: 'adoption' }
-  },
-  { 
-    id: 'e2-7', 
-    source: '2', 
-    target: '7', 
-    type: 'custom',
-    animated: false,
-    sourceHandle: 'bottom',
-    style: { stroke: '#000' },
-    data: { type: 'default' }
-  },
-  { 
-    id: 'e2-8', 
-    source: '2', 
-    target: '8', 
-    type: 'custom',
-    animated: false,
-    sourceHandle: 'bottom',
-    style: { stroke: '#000' },
-    data: { type: 'default' }
-  },
-  { 
-    id: 'e2-9', 
-    source: '2', 
-    target: '9', 
-    type: 'custom',
-    animated: false,
-    sourceHandle: 'bottom',
-    style: { stroke: '#000' },
-    data: { type: 'default' }
-  },
-  { 
-    id: 'e2-10', 
-    source: '2', 
-    target: '10', 
-    type: 'dashed',
-    animated: false,
-    sourceHandle: 'bottom',
-    style: { stroke: '#000' },
-    data: { type: 'default' }
-  },
-];
+// Initial edges (empty)
+const initialEdges = [];
 
 // Sample data for the table
 const fileData = [
@@ -371,7 +225,7 @@ const useStore = create((set, get) => ({
         break;
       case 'retainedRightsNode':
         newNode.style = { 
-          backgroundColor: '#7E69AB', 
+          backgroundColor: '#4a9af5', 
           width: 180, 
           height: 'auto',
           minHeight: 90
@@ -530,38 +384,37 @@ const useStore = create((set, get) => ({
     const formattedEffectiveDate = file.effective_date ? new Date(file.effective_date).toLocaleDateString() : 'N/A';
     const formattedFileDate = file.file_date ? new Date(file.file_date).toLocaleDateString() : 'N/A';
     
-    // For reset, we only want to show the instrument node
-    const newNodes = [
-      {
-        id: `instrument-${file.id}`,
-        type: 'instrumentNode',
-        position: { x: 350, y: 180 },
-        data: { 
-          label: file.instrument_type || 'Instrument Type',
-          details: [
-            `Execution Date: ${formattedExecDate}`,
-            `Effective Date: ${formattedEffectiveDate}`,
-            `Filed Date: ${formattedFileDate}`,
-            'Transfered Rights'
-          ],
-          note: file.property_description || '',
-          s3Url: file.s3_url || ''
-        },
-        style: { backgroundColor: '#f5f5f5', border: '1px solid #ccc', width: 250, height: 'auto' }
-      }
-    ];
+    // For initial load or reset, we only want to show the instrument node
+    const instrumentNode = {
+      id: `instrument-${file.id}`,
+      type: 'instrumentNode',
+      position: { x: 350, y: 180 },
+      data: { 
+        label: file.instrument_type || 'Instrument Type',
+        details: [
+          `Execution Date: ${formattedExecDate}`,
+          `Effective Date: ${formattedEffectiveDate}`,
+          `Filed Date: ${formattedFileDate}`,
+          'Transfered Rights'
+        ],
+        note: file.property_description || '',
+        s3Url: file.s3_url || ''
+      },
+      style: { backgroundColor: '#f5f5f5', border: '1px solid #ccc', width: 250, height: 'auto' }
+    };
     
     // Set the current file
     set({ currentFile: file });
     
-    // Load existing charts if available, and add this new chart
+    // Load existing charts if available
     const savedFlows = get().getAllSavedFlows();
-    let allNodes = [...newNodes];
+    let allNodes = [instrumentNode];
     let allEdges = [];
     
     // Position offset for each chart
     let offsetX = 0;
     
+    // Include previously saved charts
     Object.values(savedFlows).forEach(flow => {
       if (flow.id !== file.id) {
         // Add prefix to ensure unique IDs

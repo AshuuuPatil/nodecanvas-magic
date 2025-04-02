@@ -56,18 +56,21 @@ const InstrumentNode = ({ data, isConnectable, selected, style }) => {
         type="target"
         position={Position.Top}
         isConnectable={isConnectable}
+        className="instrument-top-handle"
       />
       <Handle
         id="right"
         type="source"
         position={Position.Right}
         isConnectable={isConnectable}
+        className="instrument-right-handle"
       />
       <Handle
         id="bottom"
         type="source"
         position={Position.Bottom}
         isConnectable={isConnectable}
+        className="instrument-bottom-handle"
       />
       
       <div className="node-content">

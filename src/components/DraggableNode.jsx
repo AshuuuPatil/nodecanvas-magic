@@ -28,11 +28,30 @@ const DraggableNode = ({ type, onDragStart, data, label, className }) => {
     >
       <div className="node-content">
         {label}
-        <div className="node-resizers">
-          <div className="resizer resizer-r" onMouseDown={() => setIsResizing(true)} onMouseUp={() => setIsResizing(false)}></div>
-          <div className="resizer resizer-b" onMouseDown={() => setIsResizing(true)} onMouseUp={() => setIsResizing(false)}></div>
-          <div className="resizer resizer-br" onMouseDown={() => setIsResizing(true)} onMouseUp={() => setIsResizing(false)}></div>
-        </div>
+        {/* Connection Points Visualization */}
+        {type === 'grantorNode' && (
+          <div className="node-connection-points">
+            <div className="connection-point right"></div>
+          </div>
+        )}
+        {type === 'instrumentNode' && (
+          <div className="node-connection-points">
+            <div className="connection-point top"></div>
+            <div className="connection-point right"></div>
+            <div className="connection-point bottom"></div>
+          </div>
+        )}
+        {type === 'granteeNode' && (
+          <div className="node-connection-points">
+            <div className="connection-point top"></div>
+          </div>
+        )}
+        {type === 'retainedRightsNode' && (
+          <div className="node-connection-points">
+            <div className="connection-point top"></div>
+            <div className="connection-point right"></div>
+          </div>
+        )}
       </div>
     </div>
   );

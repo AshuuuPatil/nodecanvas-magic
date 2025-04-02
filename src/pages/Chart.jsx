@@ -136,7 +136,7 @@ const Chart = () => {
     if (!reactFlowWrapperRef.current) return;
     
     // Find the ReactFlow element within the wrapper
-    const reactFlowElement = reactFlowWrapperRef.current.querySelector('.react-flow');
+    const reactFlowElement = reactFlowWrapperRef.current.querySelector('.react-flow__renderer');
     
     if (!reactFlowElement) {
       console.error('ReactFlow element not found');
