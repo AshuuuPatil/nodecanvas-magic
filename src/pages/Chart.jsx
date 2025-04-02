@@ -28,7 +28,8 @@ const Chart = () => {
     resetFlow,
     createInitialNodesForFile,
     removeNode,
-    removeEdge
+    removeEdge,
+    setCurrentFile
   } = useStore();
   
   const [selectedNode, setSelectedNode] = useState(null);
@@ -53,6 +54,7 @@ const Chart = () => {
     }
     
     setFileData(file);
+    setCurrentFile(file);
     
     // Check if we have saved charts for other files
     const savedFlows = getAllSavedFlows();
@@ -68,60 +70,9 @@ const Chart = () => {
       setMultiChartMode(true);
     }
     
-    // Load flow for this file
-    loadFlowForFile(fileId, file);
-  }, [id, getFileById, navigate, loadFlowFromLocalStorage, getAllSavedFlows]);
-  
-  // Function to load flow for a specific file
-  const loadFlowForFile = (fileId, file) => {
-    const savedFlow = loadFlowFromLocalStorage(fileId);
-    
-    if (savedFlow) {
-      // If we have a saved flow, merge it with existing nodes if in multi-chart mode
-      if (multiChartMode) {
-        mergeFlowWithExisting(savedFlow);
-      } else {
-        // Just set the nodes and edges directly
-        setNodes(savedFlow.nodes);
-        setEdges(savedFlow.edges);
-      }
-    } else {
-      // Create initial nodes for the chart
-      createInitialNodesForFile(file);
-    }
-  };
-  
-  // Function to merge a saved flow with existing nodes
-  const mergeFlowWithExisting = (savedFlow) => {
-    // Get current nodes and edges
-    const currentNodes = [...nodes];
-    const currentEdges = [...edges];
-    
-    // Offset new nodes to avoid overlap
-    const offsetX = 700; // Horizontal offset for second chart
-    
-    // Add an ID prefix to make node IDs unique
-    const prefixedNodes = savedFlow.nodes.map(node => ({
-      ...node,
-      id: `${savedFlow.id}-${node.id}`,
-      position: {
-        x: node.position.x + offsetX,
-        y: node.position.y
-      }
-    }));
-    
-    // Update edge source and target IDs with the prefix
-    const prefixedEdges = savedFlow.edges.map(edge => ({
-      ...edge,
-      id: `${savedFlow.id}-${edge.id}`,
-      source: `${savedFlow.id}-${edge.source}`,
-      target: `${savedFlow.id}-${edge.target}`
-    }));
-    
-    // Merge the nodes and edges
-    setNodes([...currentNodes, ...prefixedNodes]);
-    setEdges([...currentEdges, ...prefixedEdges]);
-  };
+    // Create initial nodes for the file, which will also load any saved flows
+    createInitialNodesForFile(file);
+  }, [id, getFileById, navigate, getAllSavedFlows, createInitialNodesForFile, setCurrentFile]);
   
   // Track changes in nodes and edges
   useEffect(() => {
@@ -175,7 +126,7 @@ const Chart = () => {
   
   const handleResetChart = () => {
     if (fileData) {
-      // Create initial nodes for the file
+      // Create initial nodes for the file (only the Instrument node as requested)
       createInitialNodesForFile(fileData);
       setHasChanges(true);
     }

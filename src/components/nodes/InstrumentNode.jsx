@@ -1,6 +1,7 @@
 
 import { memo, useState } from 'react';
 import { Handle, Position, NodeResizer } from '@xyflow/react';
+import { Button } from '../ui/button';
 
 const InstrumentNode = ({ data, isConnectable, selected, style }) => {
   const [label, setLabel] = useState(data.label || 'Instrument Type');
@@ -104,9 +105,9 @@ const InstrumentNode = ({ data, isConnectable, selected, style }) => {
         </div>
         {data.s3Url && (
           <div className="node-actions">
-            <button onClick={handleViewPDF} className="view-pdf-btn">
+            <Button onClick={handleViewPDF} variant="secondary" className="view-pdf-btn">
               View
-            </button>
+            </Button>
           </div>
         )}
       </div>

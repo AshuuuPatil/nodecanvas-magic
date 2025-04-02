@@ -1,3 +1,4 @@
+
 import { useCallback, useRef, useState } from 'react';
 import { toJpeg, toPng } from 'html-to-image';
 import { saveAs } from 'file-saver';
@@ -9,7 +10,7 @@ import '../styles/ControlPanel.css';
 
 const ControlPanel = ({ reactFlowWrapper, selectedNode, selectedEdge }) => {
   const { getNodes, getEdges, setViewport } = useReactFlow();
-  const { resetFlow, setNodeColor, setEdgeColor } = useStore();
+  const { resetFlow, setNodeColor, setEdgeColor, removeNode, removeEdge, createInitialNodesForFile } = useStore();
   const [nodeColor, setNodeColorState] = useState('#4a90e2');
   const [edgeColor, setEdgeColorState] = useState('#000000');
   const [showNodeColorPicker, setShowNodeColorPicker] = useState(false);
@@ -51,9 +52,24 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode, selectedEdge }) => {
 
   // Reset the flow
   const onReset = useCallback(() => {
-    createInitialNodes();
+    // Get the current fileData from URL or state
+    const currentFile = useStore.getState().getCurrentFile();
+    if (currentFile) {
+      createInitialNodesForFile(currentFile);
+    } else {
+      resetFlow();
+    }
     setViewport({ x: 0, y: 0, zoom: 1 });
-  }, [resetFlow, setViewport]);
+  }, [resetFlow, createInitialNodesForFile, setViewport]);
+
+  // Delete selected node or edge
+  const onDeleteSelected = useCallback(() => {
+    if (selectedNode) {
+      removeNode(selectedNode.id);
+    } else if (selectedEdge) {
+      removeEdge(selectedEdge.id);
+    }
+  }, [selectedNode, selectedEdge, removeNode, removeEdge]);
 
   // Apply color to selected node
   const applyNodeColor = useCallback(() => {
@@ -99,7 +115,6 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode, selectedEdge }) => {
                 'Execution Date',
                 'Effective Date',
                 'Filed Date',
-                '-User Notes-',
                 'Transfered Rights'
               ]
             }}
@@ -133,6 +148,15 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode, selectedEdge }) => {
       <div className="panel-section">
         <h3>Actions</h3>
         <div className="action-buttons">
+          {(selectedNode || selectedEdge) && (
+            <button 
+              className="btn-action" 
+              onClick={onDeleteSelected}
+              title="Delete selected node or edge"
+            >
+              Delete
+            </button>
+          )}
           <button 
             className="btn-action" 
             onClick={onReset}
@@ -161,7 +185,6 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode, selectedEdge }) => {
             >
               Change Color
             </button>
-            {/* Rotate button removed as per requirements */}
           </div>
           {showNodeColorPicker && (
             <div className="color-picker-container" ref={colorPickerRef}>

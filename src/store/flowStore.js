@@ -272,6 +272,7 @@ const useStore = create((set, get) => ({
   nodes: initialNodes,
   edges: initialEdges,
   fileData: fileData,
+  currentFile: null,
   
   // Apply node changes
   onNodesChange: (changes) => {
@@ -319,6 +320,16 @@ const useStore = create((set, get) => ({
         style: { stroke: '#000' }
       }, get().edges),
     });
+  },
+  
+  // Get current file
+  getCurrentFile: () => {
+    return get().currentFile;
+  },
+  
+  // Set current file
+  setCurrentFile: (file) => {
+    set({ currentFile: file });
   },
   
   // Add a new node
@@ -519,19 +530,10 @@ const useStore = create((set, get) => ({
     const formattedEffectiveDate = file.effective_date ? new Date(file.effective_date).toLocaleDateString() : 'N/A';
     const formattedFileDate = file.file_date ? new Date(file.file_date).toLocaleDateString() : 'N/A';
     
+    // For reset, we only want to show the instrument node
     const newNodes = [
       {
-        id: 'grantor-1',
-        type: 'grantorNode',
-        position: { x: 350, y: 50 },
-        data: { 
-          label: file.grantor || 'Grantor',
-          note: ''
-        },
-        style: { backgroundColor: '#9b87f5', width: 180, height: 60 }
-      },
-      {
-        id: 'instrument-1',
+        id: `instrument-${file.id}`,
         type: 'instrumentNode',
         position: { x: 350, y: 180 },
         data: { 
@@ -546,44 +548,51 @@ const useStore = create((set, get) => ({
           s3Url: file.s3_url || ''
         },
         style: { backgroundColor: '#f5f5f5', border: '1px solid #ccc', width: 250, height: 'auto' }
-      },
-      {
-        id: 'grantee-1',
-        type: 'granteeNode',
-        position: { x: 350, y: 320 },
-        data: { 
-          label: file.grantee || 'Grantee',
-          note: ''
-        },
-        style: { backgroundColor: '#7E69AB', width: 180, height: 60 }
       }
     ];
     
-    const newEdges = [
-      { 
-        id: 'e-grantor-instrument', 
-        source: 'grantor-1', 
-        target: 'instrument-1', 
-        type: 'custom',
-        animated: false,
-        style: { stroke: '#000' },
-        data: { type: 'default' }
-      },
-      { 
-        id: 'e-instrument-grantee', 
-        source: 'instrument-1', 
-        target: 'grantee-1', 
-        type: 'custom',
-        animated: false,
-        sourceHandle: 'bottom',
-        style: { stroke: '#000' },
-        data: { type: 'default' }
+    // Set the current file
+    set({ currentFile: file });
+    
+    // Load existing charts if available, and add this new chart
+    const savedFlows = get().getAllSavedFlows();
+    let allNodes = [...newNodes];
+    let allEdges = [];
+    
+    // Position offset for each chart
+    let offsetX = 0;
+    
+    Object.values(savedFlows).forEach(flow => {
+      if (flow.id !== file.id) {
+        // Add prefix to ensure unique IDs
+        const prefixedNodes = flow.nodes.map(node => ({
+          ...node,
+          id: `${flow.id}-${node.id}`,
+          position: {
+            x: node.position.x + offsetX,
+            y: node.position.y
+          }
+        }));
+        
+        // Update edge source and target IDs with the prefix
+        const prefixedEdges = flow.edges.map(edge => ({
+          ...edge,
+          id: `${flow.id}-${edge.id}`,
+          source: `${flow.id}-${edge.source}`,
+          target: `${flow.id}-${edge.target}`
+        }));
+        
+        allNodes = [...allNodes, ...prefixedNodes];
+        allEdges = [...allEdges, ...prefixedEdges];
+        
+        // Increase offset for next chart
+        offsetX += 600;
       }
-    ];
+    });
     
     set({
-      nodes: newNodes,
-      edges: newEdges
+      nodes: allNodes,
+      edges: allEdges
     });
   },
   
