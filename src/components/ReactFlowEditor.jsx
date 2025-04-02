@@ -43,7 +43,8 @@ const ReactFlowEditor = ({
   onConnect,
   onNodeClick,
   onPaneClick,
-  onEdgeClick
+  onEdgeClick,
+  onViewPdf
 }) => {
   const reactFlow = useReactFlow();
   const { addNode, updateNodeData, updateEdgeData } = useStore();
@@ -93,13 +94,29 @@ const ReactFlowEditor = ({
     updateNodeData(nodeId, key, value);
   };
 
-  const handleEdgeColorChange = (edgeId, color) => {
-    updateEdgeData(edgeId, 'color', color);
+  const handleViewPdf = (url) => {
+    if (onViewPdf) {
+      onViewPdf(url);
+    }
   };
+
+  // Process nodes to add onViewPdf callback
+  const processedNodes = nodes.map(node => {
+    if (node.type === 'instrumentNode') {
+      return {
+        ...node,
+        data: {
+          ...node.data,
+          onViewPdf: handleViewPdf
+        }
+      };
+    }
+    return node;
+  });
 
   return (
     <ReactFlow
-      nodes={nodes}
+      nodes={processedNodes}
       edges={edges}
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}

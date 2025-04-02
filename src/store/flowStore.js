@@ -383,6 +383,26 @@ const useStore = create((set, get) => ({
     });
   },
   
+  // Remove a node
+  removeNode: (nodeId) => {
+    // Remove the node
+    set({
+      nodes: get().nodes.filter(node => node.id !== nodeId),
+    });
+    
+    // Remove all connected edges
+    set({
+      edges: get().edges.filter(edge => edge.source !== nodeId && edge.target !== nodeId),
+    });
+  },
+  
+  // Remove an edge
+  removeEdge: (edgeId) => {
+    set({
+      edges: get().edges.filter(edge => edge.id !== edgeId),
+    });
+  },
+  
   // Update node data
   updateNodeData: (nodeId, key, value) => {
     set({
@@ -484,8 +504,6 @@ const useStore = create((set, get) => ({
       }),
     });
   },
-  
-  // Rotate node - REMOVED as per requirements
   
   // Reset the flow
   resetFlow: () => {

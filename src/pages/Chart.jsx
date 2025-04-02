@@ -26,7 +26,9 @@ const Chart = () => {
     loadFlowFromLocalStorage,
     getAllSavedFlows,
     resetFlow,
-    createInitialNodesForFile
+    createInitialNodesForFile,
+    removeNode,
+    removeEdge
   } = useStore();
   
   const [selectedNode, setSelectedNode] = useState(null);
@@ -36,6 +38,8 @@ const Chart = () => {
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [multiChartMode, setMultiChartMode] = useState(false);
   const [allFiles, setAllFiles] = useState([]);
+  const [showPdfViewer, setShowPdfViewer] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState('');
   
   // On component mount, load all saved flows and check which files have saved charts
   useEffect(() => {
@@ -202,6 +206,26 @@ const Chart = () => {
       });
   }, [fileData]);
 
+  const handleDeleteSelected = () => {
+    if (selectedNode) {
+      removeNode(selectedNode.id);
+      setSelectedNode(null);
+    } else if (selectedEdge) {
+      removeEdge(selectedEdge.id);
+      setSelectedEdge(null);
+    }
+  };
+
+  const handleViewPdf = (url) => {
+    setPdfUrl(url);
+    setShowPdfViewer(true);
+  };
+
+  const closePdfViewer = () => {
+    setShowPdfViewer(false);
+    setPdfUrl('');
+  };
+
   return (
     <div className="chart-container">
       <div className="chart-header">
@@ -233,6 +257,7 @@ const Chart = () => {
               onNodeClick={handleNodeClick}
               onEdgeClick={handleEdgeClick}
               onPaneClick={handlePaneClick}
+              onViewPdf={handleViewPdf}
             />
           </div>
           
@@ -258,6 +283,11 @@ const Chart = () => {
             {/* Actions Section */}
             <div className="sidebar-section">
               <h3>Actions</h3>
+              {(selectedNode || selectedEdge) && (
+                <button className="sidebar-action-button" onClick={handleDeleteSelected}>
+                  Delete
+                </button>
+              )}
               <button className="sidebar-action-button" onClick={handleResetChart}>
                 Reset
               </button>
@@ -277,17 +307,26 @@ const Chart = () => {
                     <p><strong>Label:</strong> {selectedNode.data.label}</p>
                   )}
                   <button 
-                    className="sidebar-action-button"
+                    className="sidebar-action-button color-button"
                     onClick={() => {
-                      // Change background color
-                      const nodeColor = window.prompt('Enter node color (e.g., #9b87f5):');
-                      if (nodeColor) {
-                        useStore.getState().setNodeColor(selectedNode.id, nodeColor);
-                      }
+                      // Show color picker
+                      document.querySelector('.color-picker-container').classList.toggle('show');
                     }}
                   >
                     Change Color
                   </button>
+                  <div className="color-picker-container">
+                    <div className="color-swatches">
+                      <div className="color-swatch" style={{backgroundColor: '#9b87f5'}} onClick={() => useStore.getState().setNodeColor(selectedNode.id, '#9b87f5')}></div>
+                      <div className="color-swatch" style={{backgroundColor: '#7E69AB'}} onClick={() => useStore.getState().setNodeColor(selectedNode.id, '#7E69AB')}></div>
+                      <div className="color-swatch" style={{backgroundColor: '#6E59A5'}} onClick={() => useStore.getState().setNodeColor(selectedNode.id, '#6E59A5')}></div>
+                      <div className="color-swatch" style={{backgroundColor: '#f5f5f5'}} onClick={() => useStore.getState().setNodeColor(selectedNode.id, '#f5f5f5')}></div>
+                      <div className="color-swatch" style={{backgroundColor: '#4a9af5'}} onClick={() => useStore.getState().setNodeColor(selectedNode.id, '#4a9af5')}></div>
+                      <div className="color-swatch" style={{backgroundColor: '#ea384c'}} onClick={() => useStore.getState().setNodeColor(selectedNode.id, '#ea384c')}></div>
+                      <div className="color-swatch" style={{backgroundColor: '#FFC107'}} onClick={() => useStore.getState().setNodeColor(selectedNode.id, '#FFC107')}></div>
+                      <div className="color-swatch" style={{backgroundColor: '#4CAF50'}} onClick={() => useStore.getState().setNodeColor(selectedNode.id, '#4CAF50')}></div>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -299,23 +338,51 @@ const Chart = () => {
                 <div className="selected-node-info">
                   <p><strong>ID:</strong> {selectedEdge.id}</p>
                   <button 
-                    className="sidebar-action-button"
+                    className="sidebar-action-button color-button"
                     onClick={() => {
-                      // Change edge color
-                      const edgeColor = window.prompt('Enter edge color (e.g., #000000):');
-                      if (edgeColor) {
-                        useStore.getState().setEdgeColor(selectedEdge.id, edgeColor);
-                      }
+                      // Show color picker
+                      document.querySelector('.edge-color-picker-container').classList.toggle('show');
                     }}
                   >
                     Change Edge Color
                   </button>
+                  <div className="edge-color-picker-container">
+                    <div className="color-swatches">
+                      <div className="color-swatch" style={{backgroundColor: '#000000'}} onClick={() => useStore.getState().setEdgeColor(selectedEdge.id, '#000000')}></div>
+                      <div className="color-swatch" style={{backgroundColor: '#9b87f5'}} onClick={() => useStore.getState().setEdgeColor(selectedEdge.id, '#9b87f5')}></div>
+                      <div className="color-swatch" style={{backgroundColor: '#ea384c'}} onClick={() => useStore.getState().setEdgeColor(selectedEdge.id, '#ea384c')}></div>
+                      <div className="color-swatch" style={{backgroundColor: '#FFD700'}} onClick={() => useStore.getState().setEdgeColor(selectedEdge.id, '#FFD700')}></div>
+                      <div className="color-swatch" style={{backgroundColor: '#1EAEDB'}} onClick={() => useStore.getState().setEdgeColor(selectedEdge.id, '#1EAEDB')}></div>
+                      <div className="color-swatch" style={{backgroundColor: '#4CAF50'}} onClick={() => useStore.getState().setEdgeColor(selectedEdge.id, '#4CAF50')}></div>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
           </div>
         </div>
       </ReactFlowProvider>
+      
+      {/* PDF Viewer Modal */}
+      {showPdfViewer && (
+        <div className="pdf-viewer-overlay">
+          <div className="pdf-viewer-container">
+            <div className="pdf-viewer-header">
+              <h3>Document Viewer</h3>
+              <button className="close-pdf-btn" onClick={closePdfViewer}>
+                <X size={18} />
+              </button>
+            </div>
+            <div className="pdf-viewer-content">
+              <iframe 
+                src={pdfUrl} 
+                title="PDF Viewer" 
+                className="pdf-iframe"
+              />
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Save Dialog */}
       {showSaveDialog && (

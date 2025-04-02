@@ -37,7 +37,9 @@ const InstrumentNode = ({ data, isConnectable, selected, style }) => {
 
   // Handle view PDF
   const handleViewPDF = () => {
-    if (data.s3Url) {
+    if (data.s3Url && data.onViewPdf) {
+      data.onViewPdf(data.s3Url);
+    } else if (data.s3Url) {
       window.open(data.s3Url, '_blank');
     }
   };
