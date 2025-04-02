@@ -35,6 +35,13 @@ const InstrumentNode = ({ data, isConnectable, selected, style }) => {
     }
   };
 
+  // Handle view PDF
+  const handleViewPDF = () => {
+    if (data.s3Url) {
+      window.open(data.s3Url, '_blank');
+    }
+  };
+
   return (
     <div className="instrument-node" style={style}>
       <NodeResizer 
@@ -93,6 +100,13 @@ const InstrumentNode = ({ data, isConnectable, selected, style }) => {
         >
           {note}
         </div>
+        {data.s3Url && (
+          <div className="node-actions">
+            <button onClick={handleViewPDF} className="view-pdf-btn">
+              View
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

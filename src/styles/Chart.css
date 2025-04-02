@@ -52,6 +52,7 @@
   flex: 1;
   width: 100%;
   height: calc(100vh - 70px);
+  position: relative;
 }
 
 .reactflow-wrapper {
@@ -60,28 +61,73 @@
 }
 
 .saved-flows-container {
-  display: flex;
-  flex-direction: column;
-  width: 200px;
-  height: 100%;
-  overflow-y: auto;
-  background-color: #f5f5f5;
-  border-right: 1px solid #ddd;
-  padding: 10px;
+  display: none; /* Hide the saved flows sidebar */
 }
 
-.saved-flow-preview {
+/* Instrument node view button */
+.view-pdf-btn {
+  margin-top: 8px;
+  padding: 4px 12px;
+  background-color: #9b87f5;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.view-pdf-btn:hover {
+  background-color: #7E69AB;
+}
+
+/* Right sidebar styles */
+.right-sidebar {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 250px;
+  height: 100%;
+  background-color: #f5f5f5;
+  border-left: 1px solid #ddd;
+  padding: 15px;
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.sidebar-section {
+  margin-bottom: 20px;
+}
+
+.sidebar-section h3 {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+  color: #333;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+}
+
+.sidebar-node-item {
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.sidebar-action-button {
+  display: block;
+  width: 100%;
   padding: 10px;
   margin-bottom: 10px;
-  background-color: white;
-  border: 1px solid #ddd;
+  background-color: #4a9af5;
+  color: white;
+  border: none;
   border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-.saved-flow-preview h3 {
-  margin: 0;
-  font-size: 14px;
-  color: #333;
+.sidebar-action-button:hover {
+  background-color: #3a8ae5;
 }
 
 /* Save Dialog */
@@ -164,4 +210,14 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
+}
+
+/* Node selection styles */
+.selected-node-info {
+  margin-top: 10px;
+}
+
+.selected-node-info p {
+  margin: 5px 0;
+  font-size: 14px;
 }

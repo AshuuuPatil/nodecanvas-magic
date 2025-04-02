@@ -1,15 +1,16 @@
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ReactFlowProvider } from '@xyflow/react';
 import ReactFlowEditor from '../components/ReactFlowEditor';
-import ControlPanel from '../components/ControlPanel';
 import useStore from '../store/flowStore';
 import '../styles/Chart.css';
-import { Dialog } from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
+import { toJpeg } from 'html-to-image';
+import { saveAs } from 'file-saver';
 
 const Chart = () => {
+  const reactFlowWrapperRef = useRef(null);
   const { id } = useParams();
   const navigate = useNavigate();
   const { 
@@ -23,7 +24,9 @@ const Chart = () => {
     setEdges,
     saveFlowToLocalStorage,
     loadFlowFromLocalStorage,
-    getAllSavedFlows
+    getAllSavedFlows,
+    resetFlow,
+    createInitialNodesForFile
   } = useStore();
   
   const [selectedNode, setSelectedNode] = useState(null);
@@ -31,9 +34,10 @@ const Chart = () => {
   const [fileData, setFileData] = useState(null);
   const [hasChanges, setHasChanges] = useState(false);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
-  const [savedFlows, setSavedFlows] = useState([]);
+  const [multiChartMode, setMultiChartMode] = useState(false);
+  const [allFiles, setAllFiles] = useState([]);
   
-  // Load all saved flows and current file data on component mount
+  // On component mount, load all saved flows and check which files have saved charts
   useEffect(() => {
     // Get file data from store
     const fileId = parseInt(id);
@@ -46,54 +50,75 @@ const Chart = () => {
     
     setFileData(file);
     
-    // Load all previously saved flows
-    const flows = getAllSavedFlows();
-    setSavedFlows(flows);
+    // Check if we have saved charts for other files
+    const savedFlows = getAllSavedFlows();
+    const flowsArray = Object.values(savedFlows || {});
     
-    // Check if we have a saved flow for this file
+    // Get all file data
+    const allFileData = useStore.getState().fileData;
+    setAllFiles(allFileData);
+    
+    // Check for multi-chart mode
+    const otherSavedFlows = flowsArray.filter(flow => flow.id !== fileId);
+    if (otherSavedFlows.length > 0) {
+      setMultiChartMode(true);
+    }
+    
+    // Load flow for this file
+    loadFlowForFile(fileId, file);
+  }, [id, getFileById, navigate, loadFlowFromLocalStorage, getAllSavedFlows]);
+  
+  // Function to load flow for a specific file
+  const loadFlowForFile = (fileId, file) => {
     const savedFlow = loadFlowFromLocalStorage(fileId);
     
     if (savedFlow) {
-      // If we have a saved flow, use it
-      setNodes(savedFlow.nodes);
-      setEdges(savedFlow.edges);
+      // If we have a saved flow, merge it with existing nodes if in multi-chart mode
+      if (multiChartMode) {
+        mergeFlowWithExisting(savedFlow);
+      } else {
+        // Just set the nodes and edges directly
+        setNodes(savedFlow.nodes);
+        setEdges(savedFlow.edges);
+      }
     } else {
       // Create initial nodes for the chart
-      createInitialNodes(file);
+      createInitialNodesForFile(file);
     }
-  }, [id, getFileById, navigate, setNodes, setEdges, loadFlowFromLocalStorage, getAllSavedFlows]);
+  };
   
-  // Create initial nodes function
-  const createInitialNodes = useCallback((file) => {
-    // Create initial nodes for the chart
-    const initialNodes = [
-      {
-        id: 'instrument',
-        type: 'instrumentNode',
-        position: { x: 350, y: 100 },
-        data: { 
-          label: file.instrument_type,
-          details: [
-            `Execution Date: ${file.execution_date ? new Date(file.execution_date).toLocaleDateString() : 'N/A'}`,
-            `Effective Date: ${file.effective_date ? new Date(file.effective_date).toLocaleDateString() : 'N/A'}`,
-            `Filed Date: ${file.file_date ? new Date(file.file_date).toLocaleDateString() : 'N/A'}`,
-            `Transfered Rights`
-          ],
-          note: file.property_description || 'Additional notes can be added here',
-          s3Url: file.s3_url || ''
-        },
-        style: { backgroundColor: '#f5f5f5', border: '1px solid #ccc', width: 250, height: 'auto' }
+  // Function to merge a saved flow with existing nodes
+  const mergeFlowWithExisting = (savedFlow) => {
+    // Get current nodes and edges
+    const currentNodes = [...nodes];
+    const currentEdges = [...edges];
+    
+    // Offset new nodes to avoid overlap
+    const offsetX = 700; // Horizontal offset for second chart
+    
+    // Add an ID prefix to make node IDs unique
+    const prefixedNodes = savedFlow.nodes.map(node => ({
+      ...node,
+      id: `${savedFlow.id}-${node.id}`,
+      position: {
+        x: node.position.x + offsetX,
+        y: node.position.y
       }
-    ];
+    }));
     
-    // Create initial edges (empty at first)
-    const initialEdges = [];
+    // Update edge source and target IDs with the prefix
+    const prefixedEdges = savedFlow.edges.map(edge => ({
+      ...edge,
+      id: `${savedFlow.id}-${edge.id}`,
+      source: `${savedFlow.id}-${edge.source}`,
+      target: `${savedFlow.id}-${edge.target}`
+    }));
     
-    // Set the nodes and edges in the store
-    setNodes(initialNodes);
-    setEdges(initialEdges);
-  }, [setNodes, setEdges]);
-
+    // Merge the nodes and edges
+    setNodes([...currentNodes, ...prefixedNodes]);
+    setEdges([...currentEdges, ...prefixedEdges]);
+  };
+  
   // Track changes in nodes and edges
   useEffect(() => {
     setHasChanges(true);
@@ -143,6 +168,39 @@ const Chart = () => {
     handleSaveFlow();
     navigate('/table');
   };
+  
+  const handleResetChart = () => {
+    if (fileData) {
+      // Create initial nodes for the file
+      createInitialNodesForFile(fileData);
+      setHasChanges(true);
+    }
+  };
+  
+  const handleDownloadImage = useCallback(() => {
+    if (!reactFlowWrapperRef.current) return;
+    
+    // Find the ReactFlow element within the wrapper
+    const reactFlowElement = reactFlowWrapperRef.current.querySelector('.react-flow');
+    
+    if (!reactFlowElement) {
+      console.error('ReactFlow element not found');
+      return;
+    }
+    
+    toJpeg(reactFlowElement, { 
+      quality: 0.95, 
+      backgroundColor: '#ffffff',
+      width: reactFlowElement.offsetWidth,
+      height: reactFlowElement.offsetHeight
+    })
+      .then((dataUrl) => {
+        saveAs(dataUrl, `flow-chart-${fileData.id}.jpeg`);
+      })
+      .catch((error) => {
+        console.error('Error downloading image:', error);
+      });
+  }, [fileData]);
 
   return (
     <div className="chart-container">
@@ -165,23 +223,7 @@ const Chart = () => {
       
       <ReactFlowProvider>
         <div className="flow-editor-container">
-          {/* If there are saved flows, display them alongside the current flow */}
-          {savedFlows.length > 0 && (
-            <div className="saved-flows-container">
-              {savedFlows.map(flow => (
-                <div key={flow.id} className="saved-flow-preview">
-                  <h3>File ID: {flow.id}</h3>
-                  {/* This would be a mini preview of the saved flow */}
-                </div>
-              ))}
-            </div>
-          )}
-          
-          <ControlPanel 
-            selectedNode={selectedNode}
-            selectedEdge={selectedEdge}
-          />
-          <div className="reactflow-wrapper">
+          <div className="reactflow-wrapper" ref={reactFlowWrapperRef}>
             <ReactFlowEditor
               nodes={nodes}
               edges={edges}
@@ -192,6 +234,85 @@ const Chart = () => {
               onEdgeClick={handleEdgeClick}
               onPaneClick={handlePaneClick}
             />
+          </div>
+          
+          {/* Right Sidebar */}
+          <div className="right-sidebar">
+            {/* Nodes Section */}
+            <div className="sidebar-section">
+              <h3>Nodes</h3>
+              <div className="sidebar-node-item" style={{ backgroundColor: '#9b87f5' }}>
+                Grantor
+              </div>
+              <div className="sidebar-node-item" style={{ backgroundColor: '#f5f5f5' }}>
+                Instrument
+              </div>
+              <div className="sidebar-node-item" style={{ backgroundColor: '#7E69AB' }}>
+                Grantee
+              </div>
+              <div className="sidebar-node-item" style={{ backgroundColor: '#4a9af5' }}>
+                Retained Rights
+              </div>
+            </div>
+            
+            {/* Actions Section */}
+            <div className="sidebar-section">
+              <h3>Actions</h3>
+              <button className="sidebar-action-button" onClick={handleResetChart}>
+                Reset
+              </button>
+              <button className="sidebar-action-button" onClick={handleDownloadImage}>
+                Download Image
+              </button>
+            </div>
+            
+            {/* Selected Node Info */}
+            {selectedNode && (
+              <div className="sidebar-section">
+                <h3>Selected Node</h3>
+                <div className="selected-node-info">
+                  <p><strong>Type:</strong> {selectedNode.type}</p>
+                  <p><strong>ID:</strong> {selectedNode.id}</p>
+                  {selectedNode.data.label && (
+                    <p><strong>Label:</strong> {selectedNode.data.label}</p>
+                  )}
+                  <button 
+                    className="sidebar-action-button"
+                    onClick={() => {
+                      // Change background color
+                      const nodeColor = window.prompt('Enter node color (e.g., #9b87f5):');
+                      if (nodeColor) {
+                        useStore.getState().setNodeColor(selectedNode.id, nodeColor);
+                      }
+                    }}
+                  >
+                    Change Color
+                  </button>
+                </div>
+              </div>
+            )}
+            
+            {/* Selected Edge Info */}
+            {selectedEdge && (
+              <div className="sidebar-section">
+                <h3>Selected Edge</h3>
+                <div className="selected-node-info">
+                  <p><strong>ID:</strong> {selectedEdge.id}</p>
+                  <button 
+                    className="sidebar-action-button"
+                    onClick={() => {
+                      // Change edge color
+                      const edgeColor = window.prompt('Enter edge color (e.g., #000000):');
+                      if (edgeColor) {
+                        useStore.getState().setEdgeColor(selectedEdge.id, edgeColor);
+                      }
+                    }}
+                  >
+                    Change Edge Color
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </ReactFlowProvider>

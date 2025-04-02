@@ -1,3 +1,4 @@
+
 import { create } from 'zustand';
 import {
   addEdge,
@@ -484,35 +485,87 @@ const useStore = create((set, get) => ({
     });
   },
   
-  // Rotate node
-  rotateNode: (id) => {
-    set({
-      nodes: get().nodes.map((node) => {
-        if (node.id === id) {
-          const currentRotate = node.style?.transform 
-            ? parseInt(node.style.transform.match(/rotate\((\d+)deg\)/)?.[1] || 0) 
-            : 0;
-          
-          const newRotate = (currentRotate + 45) % 360;
-          
-          return {
-            ...node,
-            style: {
-              ...node.style,
-              transform: `rotate(${newRotate}deg)`,
-            },
-          };
-        }
-        return node;
-      }),
-    });
-  },
+  // Rotate node - REMOVED as per requirements
   
   // Reset the flow
   resetFlow: () => {
     set({
       nodes: initialNodes,
       edges: initialEdges,
+    });
+  },
+  
+  // Create initial nodes for a specific file
+  createInitialNodesForFile: (file) => {
+    const formattedExecDate = file.execution_date ? new Date(file.execution_date).toLocaleDateString() : 'N/A';
+    const formattedEffectiveDate = file.effective_date ? new Date(file.effective_date).toLocaleDateString() : 'N/A';
+    const formattedFileDate = file.file_date ? new Date(file.file_date).toLocaleDateString() : 'N/A';
+    
+    const newNodes = [
+      {
+        id: 'grantor-1',
+        type: 'grantorNode',
+        position: { x: 350, y: 50 },
+        data: { 
+          label: file.grantor || 'Grantor',
+          note: ''
+        },
+        style: { backgroundColor: '#9b87f5', width: 180, height: 60 }
+      },
+      {
+        id: 'instrument-1',
+        type: 'instrumentNode',
+        position: { x: 350, y: 180 },
+        data: { 
+          label: file.instrument_type || 'Instrument Type',
+          details: [
+            `Execution Date: ${formattedExecDate}`,
+            `Effective Date: ${formattedEffectiveDate}`,
+            `Filed Date: ${formattedFileDate}`,
+            'Transfered Rights'
+          ],
+          note: file.property_description || '',
+          s3Url: file.s3_url || ''
+        },
+        style: { backgroundColor: '#f5f5f5', border: '1px solid #ccc', width: 250, height: 'auto' }
+      },
+      {
+        id: 'grantee-1',
+        type: 'granteeNode',
+        position: { x: 350, y: 320 },
+        data: { 
+          label: file.grantee || 'Grantee',
+          note: ''
+        },
+        style: { backgroundColor: '#7E69AB', width: 180, height: 60 }
+      }
+    ];
+    
+    const newEdges = [
+      { 
+        id: 'e-grantor-instrument', 
+        source: 'grantor-1', 
+        target: 'instrument-1', 
+        type: 'custom',
+        animated: false,
+        style: { stroke: '#000' },
+        data: { type: 'default' }
+      },
+      { 
+        id: 'e-instrument-grantee', 
+        source: 'instrument-1', 
+        target: 'grantee-1', 
+        type: 'custom',
+        animated: false,
+        sourceHandle: 'bottom',
+        style: { stroke: '#000' },
+        data: { type: 'default' }
+      }
+    ];
+    
+    set({
+      nodes: newNodes,
+      edges: newEdges
     });
   },
   
@@ -530,7 +583,7 @@ const useStore = create((set, get) => ({
   
   // Get file by ID
   getFileById: (id) => {
-    return get().fileData.find(file => file.id === id);
+    return get().fileData.find(file => file.id === parseInt(id));
   },
   
   // Save flow to localStorage
@@ -578,13 +631,13 @@ const useStore = create((set, get) => ({
   getAllSavedFlows: () => {
     try {
       const savedFlowsString = localStorage.getItem('savedFlows');
-      if (!savedFlowsString) return [];
+      if (!savedFlowsString) return {};
       
       const savedFlows = JSON.parse(savedFlowsString);
-      return Object.values(savedFlows);
+      return savedFlows;
     } catch (error) {
       console.error('Error getting saved flows:', error);
-      return [];
+      return {};
     }
   }
 }));

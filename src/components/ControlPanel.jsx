@@ -1,4 +1,3 @@
-
 import { useCallback, useRef, useState } from 'react';
 import { toJpeg, toPng } from 'html-to-image';
 import { saveAs } from 'file-saver';
@@ -7,11 +6,10 @@ import { useReactFlow } from '@xyflow/react';
 import useStore from '../store/flowStore';
 import DraggableNode from './DraggableNode';
 import '../styles/ControlPanel.css';
-import Chart from '../pages/Chart';
 
 const ControlPanel = ({ reactFlowWrapper, selectedNode, selectedEdge }) => {
   const { getNodes, getEdges, setViewport } = useReactFlow();
-  const { resetFlow, setNodeColor, rotateNode, setEdgeColor } = useStore();
+  const { resetFlow, setNodeColor, setEdgeColor } = useStore();
   const [nodeColor, setNodeColorState] = useState('#4a90e2');
   const [edgeColor, setEdgeColorState] = useState('#000000');
   const [showNodeColorPicker, setShowNodeColorPicker] = useState(false);
@@ -53,7 +51,6 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode, selectedEdge }) => {
 
   // Reset the flow
   const onReset = useCallback(() => {
-    //resetFlow();
     createInitialNodes();
     setViewport({ x: 0, y: 0, zoom: 1 });
   }, [resetFlow, setViewport]);
@@ -73,13 +70,6 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode, selectedEdge }) => {
     }
     setShowEdgeColorPicker(false);
   }, [selectedEdge, edgeColor, setEdgeColor]);
-
-  // Handle node rotation
-  const handleRotate = useCallback(() => {
-    if (selectedNode) {
-      rotateNode(selectedNode.id);
-    }
-  }, [selectedNode, rotateNode]);
 
   // Handle node drag start
   const onDragStart = (event, nodeType, data) => {
@@ -137,50 +127,6 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode, selectedEdge }) => {
             label="Retained Rights"
             className="node-retained-rights"
           />
-          {/* <DraggableNode 
-            type="bubbleNode" 
-            onDragStart={onDragStart} 
-            data={{ 
-              label: 'Death Certificate',
-              details: '• Details',
-              type: 'death'
-            }}
-            label="Death Certificate"
-            className="node-bubble"
-          />
-          <DraggableNode 
-            type="bubbleNode" 
-            onDragStart={onDragStart} 
-            data={{ 
-              label: 'Affidavit of Heirship',
-              details: '• Details',
-              type: 'affidavit'
-            }}
-            label="Affidavit"
-            className="node-bubble"
-          />
-          <DraggableNode 
-            type="bubbleNode" 
-            onDragStart={onDragStart} 
-            data={{ 
-              label: 'Obituary',
-              details: '• Details',
-              type: 'obituary'
-            }}
-            label="Obituary"
-            className="node-bubble"
-          />
-          <DraggableNode 
-            type="bubbleNode" 
-            onDragStart={onDragStart} 
-            data={{ 
-              label: 'Adoption / Divorce',
-              details: '• Details',
-              type: 'adoption'
-            }}
-            label="Adoption"
-            className="node-bubble"
-          /> */}
         </div>
       </div>
 
@@ -215,13 +161,7 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode, selectedEdge }) => {
             >
               Change Color
             </button>
-            <button 
-              className="btn-action"
-              onClick={handleRotate}
-              title="Rotate node"
-            >
-              Rotate
-            </button>
+            {/* Rotate button removed as per requirements */}
           </div>
           {showNodeColorPicker && (
             <div className="color-picker-container" ref={colorPickerRef}>
@@ -262,28 +202,6 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode, selectedEdge }) => {
           )}
         </div>
       )}
-
-      {/* <div className="panel-section">
-        <h3>Edge Colors</h3>
-        <div className="edge-color-guide">
-          <div className="edge-color-item">
-            <div className="color-swatch death-color"></div>
-            <span>Death Certificate</span>
-          </div>
-          <div className="edge-color-item">
-            <div className="color-swatch affidavit-color"></div>
-            <span>Affidavit of Heirship</span>
-          </div>
-          <div className="edge-color-item">
-            <div className="color-swatch obituary-color"></div>
-            <span>Obituary</span>
-          </div>
-          <div className="edge-color-item">
-            <div className="color-swatch adoption-color"></div>
-            <span>Adoption/Divorce</span>
-          </div>
-        </div>
-      </div> */}
     </div>
   );
 };
