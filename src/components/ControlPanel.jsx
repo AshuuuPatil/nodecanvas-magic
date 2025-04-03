@@ -1,4 +1,12 @@
 
+//ashu 
+//ashu 
+//ashu 
+//ashu 
+//ashu 
+//ashu 
+
+
 import { useCallback, useRef, useState } from 'react';
 import { toJpeg, toPng } from 'html-to-image';
 import { saveAs } from 'file-saver';
@@ -8,8 +16,9 @@ import useStore from '../store/flowStore';
 import DraggableNode from './DraggableNode';
 import '../styles/ControlPanel.css';
 import Chart from '../pages/Chart';
+import {createInitialNodes} from '../utils/graphUtils';
 
-const ControlPanel = ({ reactFlowWrapper, selectedNode, selectedEdge }) => {
+const ControlPanel = ({ reactFlowWrapper, selectedNode, selectedEdge,fileData, setNodes, setEdges, onReset }) => {
   const { getNodes, getEdges, setViewport } = useReactFlow();
   const { resetFlow, setNodeColor, rotateNode, setEdgeColor } = useStore();
   const [nodeColor, setNodeColorState] = useState('#4a90e2');
@@ -51,12 +60,51 @@ const ControlPanel = ({ reactFlowWrapper, selectedNode, selectedEdge }) => {
     saveAs(blob, 'flow-data.json');
   }, [reactFlowWrapper, getNodes, getEdges]);
 
-  // Reset the flow
-  const onReset = useCallback(() => {
-    //resetFlow();
-    createInitialNodes();
-    setViewport({ x: 0, y: 0, zoom: 1 });
-  }, [resetFlow, setViewport]);
+
+
+
+
+  // const onSaveImage = useCallback(() => {
+  //   if (!reactFlowWrapper || !reactFlowWrapper.current) {
+  //     console.error('Error: reactFlowWrapper is not available.');
+  //     return;
+  //   }
+  
+  //   const flowRenderer = reactFlowWrapper.current.querySelector('.react-flow__renderer');
+  //   if (!flowRenderer) {
+  //     console.error('Error: Could not find .react-flow__renderer');
+  //     return;
+  //   }
+  
+  //   toPng(flowRenderer, {
+  //     quality: 0.95,
+  //     backgroundColor: '#ffffff'
+  //   })
+  //     .then((dataUrl) => {
+  //       saveAs(dataUrl, 'flow-diagram.png');
+  //     })
+  //     .catch((error) => {
+  //       console.error('Error saving image:', error);
+  //     });
+  // }, [reactFlowWrapper, getNodes, getEdges]);
+
+  
+
+  // // Reset the flow
+  // const onReset = useCallback(() => {
+  //   //resetFlow();
+  //   createInitialNodes();
+  //   setViewport({ x: 0, y: 0, zoom: 1 });
+  // }, [resetFlow, setViewport]);
+
+  const handleReset = () => {
+    if (fileData) {
+      const { initialNodes, initialEdges } = createInitialNodes(fileData);
+      setNodes(initialNodes);
+      setEdges(initialEdges);
+      setHasChanges(false); // Reset the "hasChanges" state
+    }
+  };
 
   // Apply color to selected node
   const applyNodeColor = useCallback(() => {

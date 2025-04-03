@@ -1,5 +1,5 @@
-// Ashu 
-// Ashu 
+// Ashu
+// Ashu
 // Ashu
 // Ashu
 
@@ -12,6 +12,8 @@ const InstrumentNode = ({ data, isConnectable, selected, style }) => {
   const [note, setNote] = useState(data.note || '');
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
+  const [size, setSize] = useState({ width: 200, height: 120 });
+
 
   // Toggle menu dropdown
   const toggleMenu = () => {
@@ -22,6 +24,7 @@ const InstrumentNode = ({ data, isConnectable, selected, style }) => {
     const handleSelection = (option) => {
       setSelectedOption(option);
       setMenuOpen(false);
+      setSize({ width: 150, height: 60 }); // Resize the node when selecting an option
     };
   
   // Update the label
@@ -58,8 +61,8 @@ const InstrumentNode = ({ data, isConnectable, selected, style }) => {
   return (
     <div className="instrument-node" style={style}>
       <NodeResizer 
-        minWidth={180} 
-        minHeight={100}
+        minWidth={150} 
+        minHeight={60}
         isVisible={selected}
       />
       <Handle
@@ -80,7 +83,7 @@ const InstrumentNode = ({ data, isConnectable, selected, style }) => {
         isConnectable={isConnectable}
       />
       
-      <div className="node-content" >
+      {/* <div className="node-content" >
         <div 
           className="node-label editable-content"
           contentEditable
@@ -114,69 +117,119 @@ const InstrumentNode = ({ data, isConnectable, selected, style }) => {
           {note}
         </div>
 
-{/* Button Container */}
-<div className="button-container" style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
-          {data.s3Url && (
-            <button
-              onClick={() => window.open(data.s3Url, '_blank')}
-              style={{
-                padding: '4px 8px',
-                fontSize: '10px',
-                backgroundColor: '#007bff',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-              }}
-            >
-              View
-            </button>
-          )}
-          
-          {/* Menu Button */}
-          <div style={{ position: 'relative' }}>
-            <button
-              onClick={toggleMenu}
-              style={{
-                padding: '4px 8px',
-                fontSize: '10px',
-                backgroundColor: '#28a745',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-              }}
-            >
-              Menu
-            </button>
-            {menuOpen && (
-              <ul style={{
-                position: 'absolute',
-                top: '25px',
-                left: 0,
-                background: '#fff',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                listStyle: 'none',
-                padding: '5px 0',
-                margin: 0,
-                boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.2)',
-                width: '180px',
-                textAlign: 'center'
-                }}>
-                {['Death Certificate', 'Affidavit of Heirship', 'Obituary', 'Adoption'].map((item, index) => (
-                  <li
-                    key={index}
-                    style={{ padding: '8px 10px', fontSize: '12px', cursor: 'pointer', whiteSpace: 'nowrap' }}
-                    onClick={() => alert(item)}
-                  >
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </div>
+        
+        <div className="button-container" style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
+                  {data.s3Url && (
+                    <button
+                      onClick={() => window.open(data.s3Url, '_blank')}
+                      style={{
+                        padding: '4px 8px',
+                        fontSize: '10px',
+                        backgroundColor: '#007bff',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      View
+                    </button>
+                  )}
+                  
+                  
+                  <div style={{ position: 'relative' }}>
+                    <button
+                      onClick={toggleMenu}
+                      style={{
+                        padding: '4px 8px',
+                        fontSize: '10px',
+                        backgroundColor: '#28a745',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Menu
+                    </button>
+                    {menuOpen && (
+                      <ul style={{
+                        position: 'absolute',
+                        top: '25px',
+                        left: 0,
+                        background: '#fff',
+                        border: '1px solid #ccc',
+                        borderRadius: '4px',
+                        listStyle: 'none',
+                        padding: '5px 0',
+                        margin: 0,
+                        boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.2)',
+                        width: '180px',
+                        textAlign: 'center'
+                        }}>
+                        {['Death Certificate', 'Affidavit of Heirship', 'Obituary', 'Adoption'].map((item, index) => (
+                          <li
+                            key={index}
+                            style={{ padding: '8px 10px', fontSize: '12px', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                            onClick={() => alert(item)}
+                          >
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+          </div> 
+      </div>*/}
+
+
+
+
+<div className="node-content">
+        {selectedOption ? (
+          <a 
+          href={data.s3Url} 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="selected-text"
+        >
+          {selectedOption}
+        </a>
+        ) : (
+          <>
+            {/* Editable Label */}
+            <div className="node-label">{label}</div>
+            <div className="node-details">
+              {details.map((detail, index) => (
+                <div key={index} className="detail-item">{detail}</div>
+              ))}
+            </div>
+            <div className="node-note">{note}</div>
+
+            {/* Buttons */}
+            <div className="button-container">
+              {data.s3Url && (
+                <button onClick={() => window.open(data.s3Url, '_blank')}>
+                  View
+                </button>
+              )}
+
+              {/* Menu Button */}
+              <div style={{ position: 'relative' }}>
+                <button onClick={toggleMenu}>⋮</button>
+                {menuOpen && (
+                  <ul className="menu-dropdown">
+                    {['Add To Evidance'].map((item, index) => (
+                      <li key={index} onClick={() => handleSelection(item)}>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

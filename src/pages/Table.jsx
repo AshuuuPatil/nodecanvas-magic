@@ -1,3 +1,6 @@
+// ashu 
+// ashu 
+// ashu 
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -15,9 +18,24 @@ const Table = () => {
     file.grantee.toLowerCase().includes(searchTerm.toLowerCase())
   );
   
+  // const handleGenerateChart = (id) => {
+  //   navigate(`/chart/${id}`);
+  // };
+
   const handleGenerateChart = (id) => {
-    navigate(`/chart/${id}`);
-  };
+  let savedCharts = JSON.parse(localStorage.getItem("savedCharts")) || [];
+  
+  // Check if row ID already exists in savedCharts
+  if (!savedCharts.includes(id)) {
+    savedCharts.push(id);
+    localStorage.setItem("savedCharts", JSON.stringify(savedCharts));
+  }
+
+  navigate(`/chart/${id}`);
+};
+
+
+  
   
   return (
     <div className="table-container">
